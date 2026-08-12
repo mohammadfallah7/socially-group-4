@@ -1,56 +1,60 @@
-import { Link } from "react-router";
-import { Card, CardContent } from "@/components/ui/card";
-import { buttonVariants } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { LucideLink, LucideMapPin } from "lucide-react";
 
-// تایپ داده‌های کاربر
-interface UserData {
-  name: string;
-  username: string;
-  followingCount: number;
-  followersCount: number;
-  avatarSvgPath?: string;
-}
-
-// کامپوننت حالت ورود (IsLoggedIn)
-const IsLoggedIn = ({
-  name,
-  username,
-  followingCount,
-  followersCount,
-  avatarSvgPath = "/user_profile.svg",
-}: UserData) => {
+const SignInSidebar = () => {
   return (
-    <Card className="p-5 border-border rounded-xl shadow-sm space-y-4">
-      <CardContent className="p-0 space-y-4">
+    <Card className="w-full">
+      <CardHeader>
         <a
-          href="/profile"
-          className="flex flex-col items-center text-center space-y-3 group block"
+          className="flex flex-col items-center justify-center gap-3"
+          href="/@mohammadfallah"
         >
-          <div className="w-20 h-20 rounded-full overflow-hidden flex items-center justify-center bg-accent/50 border-2 border-primary/20 group-hover:border-primary transition-colors">
-            <img
-              src={avatarSvgPath}
-              alt={name}
-              className="w-full h-full object-cover"
-            />
+          <img
+            src="/user_profile.svg"
+            alt="Avatar"
+            className="size-12 rounded-full object-cover"
+          />
+          <div className="flex flex-col items-center justify-center text-center gap-1.5">
+            <h2 className="font-semibold text-lg">Mohammad Fallah</h2>
+            <p className="text-sm text-gray-500">@mohammadfallah</p>
           </div>
-
-          <div className="space-y-0.5">
-            <h3 className="font-bold text-base text-card-foreground group-hover:text-primary transition-colors line-clamp-1">
-              {name}
-            </h3>
-            <p className="text-xs text-muted-foreground">@{username}</p>
-          </div>
+          <p className="text-sm text-gray-500 text-center">Bio</p>
         </a>
+      </CardHeader>
 
-        <div className="flex items-center justify-center gap-6 w-full pt-3 border-t border-border/60 text-xs">
-          <div className="flex flex-col items-center">
-            <span className="font-bold text-foreground">{followingCount}</span>
-            <span className="text-muted-foreground">Following</span>
+      <CardContent className="space-y-6">
+        <div className="space-y-4">
+          <div className="w-full h-px bg-gray-300/50" />
+
+          <div className="flex items-center justify-between">
+            <div className="flex flex-col items-center justify-center">
+              <h3 className="font-semibold">3</h3>
+              <p className="text-sm text-gray-500">Followings</p>
+            </div>
+            <div className="flex flex-col items-center justify-center">
+              <h3 className="font-semibold">4</h3>
+              <p className="text-sm text-gray-500">Followers</p>
+            </div>
           </div>
-          <div className="w-px h-6 bg-border" />
-          <div className="flex flex-col items-center">
-            <span className="font-bold text-foreground">{followersCount}</span>
-            <span className="text-muted-foreground">Followers</span>
+
+          <div className="w-full h-px bg-gray-300/50" />
+        </div>
+
+        <div className="gap-3 flex flex-col items-start">
+          <div className="flex items-center gap-1.5 text-gray-500">
+            <LucideMapPin className="size-4" />
+            <p className="text-sm">No Location</p>
+          </div>
+          <div className="flex items-center gap-1.5 text-gray-500">
+            <LucideLink className="size-4" />
+            <p className="text-sm">No Website</p>
           </div>
         </div>
       </CardContent>
@@ -58,64 +62,31 @@ const IsLoggedIn = ({
   );
 };
 
-// کامپوننت حالت خروج (IsLoggedOut)
-const IsLoggedOut = () => {
+const SignOutSidebar = () => {
   return (
-    <Card className="p-6 border-border rounded-xl shadow-sm space-y-6">
-      <CardContent className="p-0 space-y-6">
-        <div className="space-y-2 text-center">
-          <h3 className="text-xl font-bold tracking-tight text-card-foreground">
-            Welcome Back!
-          </h3>
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            Login to access your profile and connect with others.
-          </p>
-        </div>
-        <div className="flex flex-col gap-3">
-          <a
-            href="/sign-in"
-            className={buttonVariants({
-              variant: "default",
-              className: "w-full rounded-xl text-center font-medium",
-            })}
-          >
-            Log In
-          </a>
-          <a
-            href="/sign-up"
-            className={buttonVariants({
-              variant: "outline",
-              className: "w-full rounded-xl text-center font-medium",
-            })}
-          >
-            Sign Up
-          </a>
-        </div>
+    <Card className="border-border rounded-xl shadow-sm">
+      <CardHeader className="text-center">
+        <CardTitle className="text-xl">Welcome Back!</CardTitle>
+        <CardDescription>
+          Sign in to access your profile and connect with others.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="flex-col flex gap-3">
+        <Button render={<a href="/sing-in" />} variant="outline">
+          Sign in
+        </Button>
+        <Button render={<a href="/sign-up" />}>Sign up</Button>
       </CardContent>
     </Card>
   );
 };
 
-// تایپ پراپ‌های کامپوننت اصلی
-interface SidebarProps {
-  isLoggedIn: boolean;
-  user?: UserData;
-}
-
-// کامپوننت اصلی سایدبار
-export const Sidebar = ({ isLoggedIn, user }: SidebarProps) => {
-  const defaultUser: UserData = {
-    name: "Mohammad Amin",
-    username: "m_amin",
-    followingCount: 0,
-    followersCount: 0,
-  };
-
-  const currentUser = user || defaultUser;
+export const Sidebar = () => {
+  const isLoggedIn = true;
 
   return (
     <aside className="hidden lg:block w-72 shrink-0 h-fit">
-      {isLoggedIn ? <IsLoggedIn {...currentUser} /> : <IsLoggedOut />}
+      {isLoggedIn ? <SignInSidebar /> : <SignOutSidebar />}
     </aside>
   );
 };
