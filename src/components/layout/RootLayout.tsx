@@ -9,7 +9,7 @@ const RootLayout = () => {
       <Header />
       <Container className="grid grid-cols-12">
         <Sidebar />
-        <div className="col-span-9">
+        <div className="lg:col-span-9">
           <Outlet />
         </div>
       </Container>

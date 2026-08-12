@@ -85,7 +85,7 @@ export const Sidebar = () => {
   const isLoggedIn = true;
 
   return (
-    <aside className="hidden lg:block w-72 shrink-0 h-fit">
+    <aside className="hidden lg:block col-span-3 shrink-0">
       {isLoggedIn ? <SignInSidebar /> : <SignOutSidebar />}
     </aside>
   );
