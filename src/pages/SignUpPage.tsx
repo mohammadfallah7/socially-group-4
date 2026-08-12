@@ -15,10 +15,10 @@ const SignUpPage = () => {
   return (
     <>
       <main className=" flex flex-col gap-6 justify-center items-center min-h-screen bg-muted">
-        <Card className="p-6 md:w-[58%] md:h-[68.2vh] min-w-[382px] flex-row p-0 gap-0 ">
+        <Card className="p-0 md:w-[58%] min-w-[382px] flex-row gap-0 ">
           <div
             id="signUpContainer"
-            className=" rounded-l-xl h-full w-[50%] border  items-center flex flex-col gap-7 flex-1 p-[32px] *:w-[85.6%]"
+            className=" rounded-l-xl h-full  border  items-center flex flex-col flex-1 py-4 px-3 *:w-full p-0"
           >
             <CardHeader className="flex flex-col items-center gap-1 mt-6">
               <CardTitle className="text-2xl font-bold">
@@ -63,7 +63,7 @@ const SignUpPage = () => {
               </div>
             </CardContent>
           </div>
-          <div className=" hidden md:block md:flex-1 md:w-[50%] bg-muted"></div>
+          <div className=" hidden md:block md:flex-1  bg-muted"></div>
         </Card>
 
         <p className="text-center text-sm font-normal text-muted-foreground w-96 md:w-[826.4px]">
@@ -84,8 +84,6 @@ const SignUpPage = () => {
           .
         </p>
       </main>
-
-      <footer className=" m-5"></footer>
     </>
   );
 };

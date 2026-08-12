@@ -1,14 +1,7 @@
-import { Button } from "./components/ui/button";
-import { Input } from "./components/ui/input";
+import SignUpPage from "./pages/SignUpPage";
 
 const App = () => {
-  return (
-    <div>
-      <Button>Click Me!</Button>
-
-      <Input />
-    </div>
-  );
+  return <SignUpPage />;
 };
 
 export default App;
