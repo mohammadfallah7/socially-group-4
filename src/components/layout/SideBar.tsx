@@ -1,130 +1,92 @@
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MessageSquare, Heart, UserPlus } from "lucide-react";
+import { LucideLink, LucideMapPin } from "lucide-react";
 
-const INITIAL_NOTIFICATIONS = [
-  {
-    id: 1,
-    type: "follow",
-    user: "کیومرث",
-    avatar: "/user_profile.svg",
-    action: "started following you",
-    time: "36 minutes ago",
-    isUnread: true,
-  },
-  {
-    id: 2,
-    type: "comment",
-    user: "کیومرث",
-    avatar: "/user_profile.svg",
-    action: "liked your post",
-    postContent: "helloooo",
-    time: "38 minutes ago",
-    isUnread: true,
-  },
-  {
-    id: 3,
-    type: "like",
-    user: "naem-bm",
-    avatar: "/user_profile.svg",
-    action: "liked your post",
-    postContent: "helloooo",
-    time: "about 1 hour ago",
-    isUnread: true,
-  },
-  {
-    id: 4,
-    type: "like",
-    user: "salar",
-    avatar: "/user_profile.svg",
-    action: "liked your post",
-    postContent: "helloooo",
-    time: "about 1 hour ago",
-    isUnread: true,
-  },
-];
-
-export const Notifications = () => {
-  const [notifications, setNotifications] = useState(INITIAL_NOTIFICATIONS);
-
-  const unreadCount = notifications.filter((n) => n.isUnread).length;
-
-  const handleMarkAllAsRead = () => {
-    setNotifications((prev) =>
-      prev.map((item) => ({ ...item, isUnread: false })),
-    );
-  };
-
+const SignInSidebar = () => {
   return (
-    <Card className="w-full min-h-96 flex flex-col">
-      <CardHeader className="flex flex-row items-center justify-between shrink-0">
-        <CardTitle className="text-lg font-semibold">Notifications</CardTitle>
-
-        <div className="flex items-center gap-3 text-sm text-muted-foreground">
-          <span>{unreadCount} unread</span>
-          {unreadCount > 0 && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleMarkAllAsRead}
-              className="h-auto p-0 text-sm text-muted-foreground hover:text-foreground hover:bg-transparent"
-            >
-              Mark as read
-            </Button>
-          )}
-        </div>
+    <Card className="w-full">
+      <CardHeader>
+        <a
+          className="flex flex-col items-center justify-center gap-3"
+          href="/@mohammadfallah"
+        >
+          <img
+            src="/user_profile.svg"
+            alt="Avatar"
+            className="size-12 rounded-full object-cover"
+          />
+          <div className="flex flex-col items-center justify-center text-center gap-1.5">
+            <h2 className="font-semibold text-lg">Mohammad Fallah</h2>
+            <p className="text-sm text-gray-500">@mohammadfallah</p>
+          </div>
+          <p className="text-sm text-gray-500 text-center">Bio</p>
+        </a>
       </CardHeader>
 
-      <CardContent className="space-y-3 flex-1 overflow-y-auto max-h-96">
-        {notifications.map((item) => (
-          <div
-            key={item.id}
-            className={`flex items-start gap-3 p-3.5 rounded-xl border transition-all ${
-              item.isUnread
-                ? "bg-secondary border-border"
-                : "bg-transparent border-transparent"
-            }`}
-          >
-            <img
-              src={item.avatar}
-              alt="Avatar"
-              className="size-10 rounded-full object-cover shrink-0"
-            />
+      <CardContent className="space-y-6">
+        <div className="space-y-4">
+          <div className="w-full h-px bg-gray-300/50" />
 
-            <div className="flex-1 space-y-2 text-sm">
-              <div className="flex items-center gap-1.5 flex-wrap">
-                {item.type === "follow" && (
-                  <UserPlus className="size-4 text-blue-500 shrink-0" />
-                )}
-                {item.type === "comment" && (
-                  <MessageSquare className="size-4 text-blue-500 shrink-0" />
-                )}
-                {item.type === "like" && (
-                  <Heart className="size-4 text-rose-500 shrink-0" />
-                )}
-
-                <span className="font-semibold">{item.user}</span>
-                <span className="text-muted-foreground">{item.action}</span>
-              </div>
-
-              {item.postContent && (
-                <div className="p-2.5 rounded-lg bg-muted text-xs text-muted-foreground">
-                  {item.postContent}
-                </div>
-              )}
-
-              <p className="text-xs text-muted-foreground">{item.time}</p>
+          <div className="flex items-center justify-between">
+            <div className="flex flex-col items-center justify-center">
+              <h3 className="font-semibold">3</h3>
+              <p className="text-sm text-gray-500">Followings</p>
             </div>
-
-            {item.isUnread && (
-              <span className="size-2 rounded-full bg-blue-500 shrink-0 mt-2" />
-            )}
+            <div className="flex flex-col items-center justify-center">
+              <h3 className="font-semibold">4</h3>
+              <p className="text-sm text-gray-500">Followers</p>
+            </div>
           </div>
-        ))}
+
+          <div className="w-full h-px bg-gray-300/50" />
+        </div>
+
+        <div className="gap-3 flex flex-col items-start">
+          <div className="flex items-center gap-1.5 text-gray-500">
+            <LucideMapPin className="size-4" />
+            <p className="text-sm">No Location</p>
+          </div>
+          <div className="flex items-center gap-1.5 text-gray-500">
+            <LucideLink className="size-4" />
+            <p className="text-sm">No Website</p>
+          </div>
+        </div>
       </CardContent>
     </Card>
   );
 };
 
-export default Notifications;
+const SignOutSidebar = () => {
+  return (
+    <Card className="border-border rounded-xl shadow-sm">
+      <CardHeader className="text-center">
+        <CardTitle className="text-xl">Welcome Back!</CardTitle>
+        <CardDescription>
+          Sign in to access your profile and connect with others.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="flex-col flex gap-3">
+        <Button render={<a href="/sing-in" />} variant="outline">
+          Sign in
+        </Button>
+        <Button render={<a href="/sign-up" />}>Sign up</Button>
+      </CardContent>
+    </Card>
+  );
+};
+
+export const Sidebar = () => {
+  const isLoggedIn = true;
+
+  return (
+    <aside className="hidden lg:block col-span-3 shrink-0 shadow-gray-100 shadow-md">
+      {isLoggedIn ? <SignInSidebar /> : <SignOutSidebar />}
+    </aside>
+  );
+};
