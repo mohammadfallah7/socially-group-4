@@ -1,11 +1,11 @@
-import { Routes, Route } from "react-router";
-import RootLayout from "./components/layout/RootLayout";
+import Container from "./components/layout/Container";
+import CreatePostForm from "./components/post/CreatePostForm";
 
 const App = () => {
   return (
-    <Routes>
-      <Route path="/" element={<RootLayout />} />
-    </Routes>
+    <Container>
+      <CreatePostForm />
+    </Container>
   );
 };
 

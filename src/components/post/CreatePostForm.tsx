@@ -1,10 +1,4 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Send } from "lucide-react";
 
@@ -22,19 +16,14 @@ export const CreatePostForm = () => {
             <textarea
               placeholder="Whats on your mind?"
               rows={3}
-              className="w-full resize-none bg-transparent text-sm placeholder:text-gray-500 focus:outline-none"
+              className="w-full resize-none bg-transparent text-sm placeholder:text-sm placeholder:text-gray-500 focus:outline-none"
             />
           </div>
 
           <div className="w-full h-px bg-gray-300/50" />
 
           <div className="flex justify-end">
-            <Button
-              type="submit"
-              size="sm"
-              variant="outline"
-              className="gap-2 bg-white text-black hover:bg-gray-200"
-            >
+            <Button type="submit">
               <Send className="size-4" />
               Post
             </Button>
