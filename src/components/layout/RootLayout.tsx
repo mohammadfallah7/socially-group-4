@@ -8,10 +8,10 @@ const RootLayout = () => {
     <div className="space-y-5">
       <Header />
 
-      <Container className="grid grid-cols-12 gap-6">
+      <Container className="grid lg:grid-cols-12 gap-6">
         <Sidebar />
 
-        <div className="lg:col-span-9 col-span-12">
+        <div className="lg:col-span-9">
           <Outlet />
         </div>
       </Container>

@@ -1,5 +1,6 @@
+import { Bell, Home, LogOut, Menu, Moon, Sun, User } from "lucide-react";
+import { Link } from "react-router";
 import { Button } from "../ui/button";
-import { Sun, Moon, Home, User, Bell, Menu, LogOut } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -16,9 +17,9 @@ const Header = () => {
     <header className="border-b py-5">
       <Container className="flex items-center justify-between">
         {/* Logo */}
-        <a href="/" className="font-mono text-xl font-bold">
+        <Link to="/" className="font-mono text-xl font-bold">
           Socially
-        </a>
+        </Link>
 
         {/* Desktop Navigation */}
         <nav className="hidden items-center gap-3 md:flex">
@@ -29,7 +30,7 @@ const Header = () => {
           </Button>
 
           {/* Home */}
-          <Button variant="ghost" size="lg">
+          <Button render={<Link to="/" />} variant="ghost" size="lg">
             <Home className="size-4" />
             Home
           </Button>
@@ -37,13 +38,17 @@ const Header = () => {
           {isLoggedIn ? (
             <>
               {/* Notification */}
-              <Button variant="ghost" size="lg">
+              <Button
+                render={<Link to="/notifications" />}
+                variant="ghost"
+                size="lg"
+              >
                 <Bell className="size-4" />
                 Notification
               </Button>
 
               {/* Profile */}
-              <Button variant="ghost" size="lg">
+              <Button render={<Link to="/profile" />} variant="ghost" size="lg">
                 <User className="size-4" />
                 Profile
               </Button>
