@@ -1,12 +1,12 @@
 import { Routes, Route } from "react-router";
 import RootLayout from "./components/layout/RootLayout";
-import PostCard from "./components/post/PostCard";
+import PostList from "./components/post/PostList";
 
 const App = () => {
   return (
     <Routes>
       <Route path="/" element={<RootLayout />}>
-        <Route index element={<PostCard />} />
+        <Route index element={<PostList />} />
       </Route>
     </Routes>
   );
