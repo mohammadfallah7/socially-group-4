@@ -10,7 +10,7 @@ import { LucideLink, LucideMapPin } from "lucide-react";
 
 const SignInSidebar = () => {
   return (
-    <Card className="w-full">
+    <Card className="w-full shadow-muted shadow-md">
       <CardHeader>
         <a
           className="flex flex-col items-center justify-center gap-3"
@@ -23,9 +23,9 @@ const SignInSidebar = () => {
           />
           <div className="flex flex-col items-center justify-center text-center gap-1.5">
             <h2 className="font-semibold text-lg">Mohammad Fallah</h2>
-            <p className="text-sm text-gray-500">@mohammadfallah</p>
+            <p className="text-sm text-muted-foreground">@mohammadfallah</p>
           </div>
-          <p className="text-sm text-gray-500 text-center">Bio</p>
+          <p className="text-sm text-muted-foreground text-center">Bio</p>
         </a>
       </CardHeader>
 
@@ -36,11 +36,11 @@ const SignInSidebar = () => {
           <div className="flex items-center justify-between">
             <div className="flex flex-col items-center justify-center">
               <h3 className="font-semibold">3</h3>
-              <p className="text-sm text-gray-500">Followings</p>
+              <p className="text-sm text-muted-foreground">Followings</p>
             </div>
             <div className="flex flex-col items-center justify-center">
               <h3 className="font-semibold">4</h3>
-              <p className="text-sm text-gray-500">Followers</p>
+              <p className="text-sm text-muted-foreground">Followers</p>
             </div>
           </div>
 
@@ -48,11 +48,11 @@ const SignInSidebar = () => {
         </div>
 
         <div className="gap-3 flex flex-col items-start">
-          <div className="flex items-center gap-1.5 text-gray-500">
+          <div className="flex items-center gap-1.5 text-muted-foreground">
             <LucideMapPin className="size-4" />
             <p className="text-sm">No Location</p>
           </div>
-          <div className="flex items-center gap-1.5 text-gray-500">
+          <div className="flex items-center gap-1.5 text-muted-foreground">
             <LucideLink className="size-4" />
             <p className="text-sm">No Website</p>
           </div>
@@ -85,7 +85,7 @@ export const Sidebar = () => {
   const isLoggedIn = true;
 
   return (
-    <aside className="hidden lg:block col-span-3 shrink-0 shadow-gray-100 shadow-md">
+    <aside className="hidden lg:block lg:col-span-3">
       {isLoggedIn ? <SignInSidebar /> : <SignOutSidebar />}
     </aside>
   );

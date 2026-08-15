@@ -7,7 +7,7 @@ const PostCard = () => {
   const [addComment, setAddComment] = useState(false);
 
   return (
-    <Card className="shadow-gray-100 shadow-md">
+    <Card className="shadow-muted shadow-md">
       <CardContent className="flex flex-col gap-5">
         <div className="flex items-center gap-3">
           <img

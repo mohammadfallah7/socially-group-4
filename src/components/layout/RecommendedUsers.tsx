@@ -3,7 +3,7 @@ import { Card, CardContent } from "../ui/card";
 
 const RecommendedUsers = () => {
   return (
-    <Card className="w-full shadow-gray-100 shadow-md hidden lg:block lg:col-span-4 h-fit">
+    <Card className="w-full shadow-muted shadow-md hidden lg:block lg:col-span-4 h-fit">
       <CardContent className="p-6">
         <h2 className="mb-7 font-semibold text-lg">Recommended users</h2>
 
