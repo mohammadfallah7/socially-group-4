@@ -11,7 +11,7 @@ export const CreatePostForm = () => {
             <img
               src="/user_profile.svg"
               alt="Avatar"
-              className="size-10 rounded-full object-cover"
+              className="size-8 rounded-full object-cover"
             />
             <textarea
               placeholder="Whats on your mind?"
