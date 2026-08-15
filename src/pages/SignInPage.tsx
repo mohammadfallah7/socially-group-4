@@ -9,7 +9,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-const SignUpPage = () => {
+const SignInPage = () => {
   return (
     <main className="flex flex-col gap-6 justify-center items-center min-h-screen bg-muted px-10">
       <Card className="p-0 w-full max-w-sm md:max-w-4xl flex-row gap-0">
@@ -18,26 +18,11 @@ const SignUpPage = () => {
           className=" rounded-l-xl h-full  border  items-center flex flex-col flex-1 p-2 md:py-4 md:px-4 gap-7 *:w-full"
         >
           <CardHeader className="flex flex-col items-center gap-3 mt-6">
-            <CardTitle className="text-2xl font-bold">
-              Create your account
-            </CardTitle>
+            <CardTitle className="text-2xl font-bold">Welcome back</CardTitle>
 
-            <CardDescription>
-              Enter your email below to create your account
-            </CardDescription>
+            <CardDescription>Login to your Socially account</CardDescription>
           </CardHeader>
 
-          <CardContent>
-            <div className="space-y-2 flex flex-col gap-0.75">
-              <Label htmlFor="name">Name</Label>
-              <Input
-                id="name"
-                type="text"
-                placeholder="Enter your name"
-                className="shadow-xs shadow-accent py-1 px-3 rounded-[8px] h-9"
-              />
-            </div>
-          </CardContent>
           <CardContent>
             <div className="space-y-2 flex flex-col gap-0.75">
               <Label htmlFor="email">Email</Label>
@@ -62,19 +47,19 @@ const SignUpPage = () => {
           <CardContent>
             <div className="  h-5 flex align-middle font-medium text-[14px]">
               <Button className="w-full font-medium text-[14px] py-2 px-4 h-9 cursor-pointer">
-                Create Account
+                Login
               </Button>
             </div>
           </CardContent>
           <CardContent>
             <div className="m-4">
               <p className="text-center text-sm text-muted-foreground">
-                Already have an account?{" "}
+                Don't have an account?{" "}
                 <a
-                  href="/sign-in"
+                  href="/sign-up"
                   className="text-muted-foreground underline underline-offset-4 hover:text-foreground"
                 >
-                  Sign in
+                  Sign up
                 </a>
               </p>
             </div>
@@ -104,4 +89,4 @@ const SignUpPage = () => {
   );
 };
 
-export default SignUpPage;
+export default SignInPage;
