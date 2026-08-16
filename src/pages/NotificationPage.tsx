@@ -53,7 +53,7 @@ export const Notifications = () => {
 
   const handleMarkAllAsRead = () => {
     setNotifications((prev) =>
-      prev.map((item) => ({ ...item, isUnread: false }))
+      prev.map((item) => ({ ...item, isUnread: false })),
     );
   };
 
@@ -108,9 +108,7 @@ export const Notifications = () => {
                     )}
 
                     <span className="font-semibold">{item.user}</span>
-                    <span className="text-muted-foreground">
-                      {item.action}
-                    </span>
+                    <span className="text-muted-foreground">{item.action}</span>
                   </div>
 
                   {item.postContent && (
