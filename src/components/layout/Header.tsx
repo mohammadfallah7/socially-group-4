@@ -14,7 +14,7 @@ const Header = () => {
   const isLoggedIn = true;
 
   return (
-    <header className="border-b py-5">
+    <header className="border-b py-5 sticky top-0 z-50 bg-background/80 backdrop-blur-xl">
       <Container className="flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="font-mono text-xl font-bold">

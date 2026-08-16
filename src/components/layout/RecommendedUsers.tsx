@@ -3,8 +3,8 @@ import { Card, CardContent } from "../ui/card";
 
 const RecommendedUsers = () => {
   return (
-    <Card className="w-full shadow-muted shadow-md hidden lg:block lg:col-span-4 h-fit">
-      <CardContent className="p-6">
+    <Card className="shadow-muted shadow-md hidden lg:block lg:col-span-4 sticky top-24">
+      <CardContent className="px-6">
         <h2 className="mb-7 font-semibold text-lg">Recommended users</h2>
 
         <div className="flex flex-col gap-5">
