@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-
+import { Link } from "react-router";
 const SignInPage = () => {
   return (
     <main className="flex flex-col gap-6 justify-center items-center min-h-screen bg-muted px-10">
@@ -55,12 +55,12 @@ const SignInPage = () => {
             <div className="m-4">
               <p className="text-center text-sm text-muted-foreground">
                 Don't have an account?{" "}
-                <a
-                  href="/sign-up"
+                <Link
+                  to="/sign-up"
                   className="text-muted-foreground underline underline-offset-4 hover:text-foreground"
                 >
                   Sign up
-                </a>
+                </Link>
               </p>
             </div>
           </CardContent>

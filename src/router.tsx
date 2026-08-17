@@ -4,7 +4,7 @@ import RootLayout from "./components/layout/RootLayout";
 import Notifications from "./pages/NotificationPage";
 import SignInPage from "./pages/SignInPage";
 import SignUpPage from "./pages/SignUpPage";
-
+import ProfilePage from "./pages/ProfilePage";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -12,6 +12,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, Component: App },
       { path: "notifications", Component: Notifications },
+      { path: "profile/", Component: ProfilePage },
     ],
   },
   {
@@ -22,6 +23,7 @@ const router = createBrowserRouter([
     path: "/sign-up",
     Component: SignUpPage,
   },
+  
 ]);
 
 export default router;

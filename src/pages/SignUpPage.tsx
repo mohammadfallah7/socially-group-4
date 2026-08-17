@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Link } from "react-router";
 
 const SignUpPage = () => {
   return (
@@ -70,12 +71,12 @@ const SignUpPage = () => {
             <div className="m-4">
               <p className="text-center text-sm text-muted-foreground">
                 Already have an account?{" "}
-                <a
-                  href="/sign-in"
+                <Link
+                  to="/sign-in"
                   className="text-muted-foreground underline underline-offset-4 hover:text-foreground"
                 >
                   Sign in
-                </a>
+                </Link>
               </p>
             </div>
           </CardContent>
