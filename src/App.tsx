@@ -8,6 +8,11 @@ const App = () => {
       <div className="lg:col-span-6 space-y-5">
         <CreatePostForm />
         <PostCard />
+        <PostCard />
+        <PostCard />
+        <PostCard />
+        <PostCard />
+        <PostCard />
       </div>
       <div className="hidden lg:block lg:col-span-3">
         <RecommendedUsers />

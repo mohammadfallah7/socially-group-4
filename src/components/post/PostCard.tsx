@@ -7,8 +7,9 @@ const PostCard = () => {
   const [addComment, setAddComment] = useState(false);
 
   return (
-    <Card className="shadow-muted shadow-md">
+    <Card className="shadow-md shadow-muted">
       <CardContent className="flex flex-col gap-5">
+        {/* Post Header */}
         <div className="flex items-center gap-3">
           <img
             src="/user_profile.svg"
@@ -17,7 +18,7 @@ const PostCard = () => {
           />
 
           <div className="flex items-center gap-4">
-            <div className="flex items-center flex-col gap-4 lg:flex-row">
+            <div className="flex flex-col gap-1 lg:flex-row lg:items-center">
               <h2 className="text-lg font-medium">naem-brm</h2>
               <span className="text-muted-foreground">@naem-brm</span>
             </div>
@@ -26,8 +27,10 @@ const PostCard = () => {
           </div>
         </div>
 
+        {/* Post */}
         <p>hellooooo</p>
 
+        {/* Actions */}
         <div className="flex gap-6 text-muted-foreground">
           <Button variant="ghost" className="cursor-pointer">
             <Heart />1
@@ -36,15 +39,86 @@ const PostCard = () => {
           <Button
             variant="ghost"
             className="cursor-pointer"
-            onClick={() => setAddComment(!addComment)}
+            onClick={() => setAddComment((prev) => !prev)}
           >
-            <MessageCircle />0
+            <MessageCircle />3
           </Button>
         </div>
 
+        {/* Comments */}
         {addComment && (
-          <div className="border-t pt-5 flex flex-col gap-3">
-            <div className="flex items-start gap-3">
+          <div className="border-t pt-5 flex flex-col gap-5">
+            {/* Comment 1 */}
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center gap-3">
+                <img
+                  src="/user_profile.svg"
+                  alt="Avatar"
+                  className="size-8 rounded-full object-cover"
+                />
+
+                <div className="flex items-center gap-3">
+                  <h3 className="font-medium">sepehr</h3>
+                  <span className="text-sm text-muted-foreground">
+                    @sepehrtaale
+                  </span>
+                  <span className="text-sm text-muted-foreground">
+                    1 day ago
+                  </span>
+                </div>
+              </div>
+
+              <p className="text-sm">hello</p>
+            </div>
+
+            {/* Comment 2 */}
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center gap-3">
+                <img
+                  src="/user_profile.svg"
+                  alt="Avatar"
+                  className="size-8 rounded-full object-cover"
+                />
+
+                <div className="flex items-center gap-3">
+                  <h3 className="font-medium">sepehr</h3>
+                  <span className="text-sm text-muted-foreground">
+                    @sepehrtaale
+                  </span>
+                  <span className="text-sm text-muted-foreground">
+                    about 17 hours ago
+                  </span>
+                </div>
+              </div>
+
+              <p className="text-sm">hhhhhhhhhhhh</p>
+            </div>
+
+            {/* Comment 3 */}
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center gap-3">
+                <img
+                  src="/user_profile.svg"
+                  alt="Avatar"
+                  className="size-8 rounded-full object-cover"
+                />
+
+                <div className="flex items-center gap-3">
+                  <h3 className="font-medium">sepehr</h3>
+                  <span className="text-sm text-muted-foreground">
+                    @sepehrtaale
+                  </span>
+                  <span className="text-sm text-muted-foreground">
+                    about 17 hours ago
+                  </span>
+                </div>
+              </div>
+
+              <p className="text-sm">hhhhhh</p>
+            </div>
+
+            {/* Add Comment */}
+            <div className="flex items-start gap-3 border-t pt-5">
               <img
                 src="/user_profile.svg"
                 alt="Avatar"
