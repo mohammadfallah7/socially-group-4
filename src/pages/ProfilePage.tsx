@@ -21,7 +21,7 @@ const ProfilePage = () => {
 
           <div className="flex flex-col items-center gap-1.5 text-center">
             <h1 className="text-xl font-semibold">Mohammad Fallah</h1>
-            <p className="text-sm text-muted-foreground">Mohammad</p>
+            <p className="text-sm text-muted-foreground">{username}</p>
           </div>
 
           <p className="text-sm text-muted-foreground text-center"></p>
@@ -64,31 +64,28 @@ const ProfilePage = () => {
           </div>
         </CardContent>
       </Card>
+
       <div className="space-y-6 py">
         {/* Posts / Likes */}
         <div className="flex h-9 w-full rounded-lg bg-muted p-1">
-  <button
-    onClick={() => setActiveTab("posts")}
-    className={`flex-1 rounded-md text-sm font-semibold text-foreground transition-all ${
-      activeTab === "posts"
-        ? "bg-background shadow-sm"
-        : ""
-    }`}
-  >
-    Posts
-  </button>
+          <button
+            onClick={() => setActiveTab("posts")}
+            className={`flex-1 rounded-md text-sm font-semibold text-foreground transition-all ${
+              activeTab === "posts" ? "bg-background shadow-sm" : ""
+            }`}
+          >
+            Posts
+          </button>
 
-  <button
-    onClick={() => setActiveTab("likes")}
-    className={`flex-1 rounded-md text-sm font-semibold text-foreground transition-all ${
-      activeTab === "likes"
-        ? "bg-background shadow-sm"
-        : ""
-    }`}
-  >
-    Likes
-  </button>
-</div>
+          <button
+            onClick={() => setActiveTab("likes")}
+            className={`flex-1 rounded-md text-sm font-semibold text-foreground transition-all ${
+              activeTab === "likes" ? "bg-background shadow-sm" : ""
+            }`}
+          >
+            Likes
+          </button>
+        </div>
 
         {/* Posts */}
         {activeTab === "posts" && (

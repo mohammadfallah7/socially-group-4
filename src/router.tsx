@@ -12,7 +12,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, Component: App },
       { path: "notifications", Component: Notifications },
-      { path: "profile/", Component: ProfilePage },
+      { path: "profile/:username", Component: ProfilePage },
     ],
   },
   {
@@ -23,7 +23,6 @@ const router = createBrowserRouter([
     path: "/sign-up",
     Component: SignUpPage,
   },
-  
 ]);
 
 export default router;
