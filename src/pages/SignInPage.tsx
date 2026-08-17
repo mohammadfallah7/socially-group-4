@@ -1,11 +1,3 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router";
-import {
-  QueryClient,
-  QueryClientProvider,
-  useMutation,
-} from "@tanstack/react-query";
-import { axiosInstance } from "@/lib/axios";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -16,39 +8,51 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { toast } from "@/components/ui/toast";
+import { axiosInstance } from "@/lib/axios";
+import type { LoginResponse } from "@/types/auth.type";
+import type { ErrorResponse, Response } from "@/types/response.type";
+import { useMutation } from "@tanstack/react-query";
+import type { AxiosError } from "axios";
+import { LucideLoader2 } from "lucide-react";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router";
 
-const queryClient = new QueryClient();
-
-const SignInForm = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+const SignInPage = () => {
+  const [formValues, setFormValues] = useState({ email: "", password: "" });
   const navigate = useNavigate();
 
-  const loginMutation = useMutation({
-    mutationFn: async () => {
-      const response = await axiosInstance.post("/api/authentication/login", {
-        email,
-        password,
-      });
+  const { mutate, isPending } = useMutation({
+    mutationFn: async (payload: { email: string; password: string }) => {
+      const response = await axiosInstance.post<Response<LoginResponse>>(
+        "/api/authentication/login",
+        payload,
+      );
       return response.data;
     },
     onSuccess: (data) => {
-      console.log("Login successful:", data);
-      navigate("/");
+      toast.add({ type: "success", description: data.message });
+      navigate(data.data.url);
     },
-    onError: (error: any) => {
-      console.error("Login failed:", error);
-      alert(
-        error?.response?.data?.message ||
-          "Incorrect email or password. Please try again.",
-      );
+    onError: (error: AxiosError<ErrorResponse<string>>) => {
+      toast.add({ type: "error", description: error.response?.data.error });
     },
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!email || !password) return;
-    loginMutation.mutate();
+
+    if (!formValues.email || !formValues.password) {
+      return toast.add({ type: "error", description: "Fields are required" });
+    }
+    if (formValues.password.length <= 8) {
+      return toast.add({
+        type: "error",
+        description: "Password field must be at least 8 characters",
+      });
+    }
+
+    mutate(formValues);
   };
 
   return (
@@ -71,8 +75,10 @@ const SignInForm = () => {
                 id="email"
                 type="email"
                 placeholder="m@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={formValues.email}
+                onChange={(e) =>
+                  setFormValues({ ...formValues, email: e.target.value })
+                }
                 className="shadow-xs shadow-accent py-1 px-3 rounded-[8px] h-9"
                 required
               />
@@ -85,8 +91,10 @@ const SignInForm = () => {
               <Input
                 id="password"
                 type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={formValues.password}
+                onChange={(e) =>
+                  setFormValues({ ...formValues, password: e.target.value })
+                }
                 className="shadow-xs shadow-accent py-1 px-3 rounded-[8px] h-9"
                 required
               />
@@ -97,10 +105,11 @@ const SignInForm = () => {
             <div className="h-5 flex align-middle font-medium text-[14px]">
               <Button
                 type="submit"
-                disabled={loginMutation.isPending}
+                disabled={isPending}
                 className="w-full font-medium text-[14px] py-2 px-4 h-9 cursor-pointer"
               >
-                {loginMutation.isPending ? "Logging in..." : "Login"}
+                {isPending && <LucideLoader2 className="size-4 animate-spin" />}
+                Login
               </Button>
             </div>
           </CardContent>
@@ -141,14 +150,6 @@ const SignInForm = () => {
         .
       </p>
     </main>
-  );
-};
-
-const SignInPage = () => {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <SignInForm />
-    </QueryClientProvider>
   );
 };
 
