@@ -40,7 +40,7 @@ const SignInForm = () => {
       console.error("Login failed:", error);
       alert(
         error?.response?.data?.message ||
-          "Login failed! Please check your credentials.",
+          "Incorrect email or password. Please try again.",
       );
     },
   });
