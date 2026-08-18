@@ -90,18 +90,14 @@ const ProfilePage = () => {
         {/* Posts */}
         {activeTab === "posts" && (
           <div>
-            <PostCard />
-            <PostCard />
-            <PostCard />
-            <PostCard />
-            <PostCard />
+            
           </div>
         )}
 
         {/* Likes */}
         {activeTab === "likes" && (
           <div>
-            <PostCard />
+            
           </div>
         )}
       </div>

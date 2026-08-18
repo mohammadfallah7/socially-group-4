@@ -4,6 +4,9 @@ import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
 import type { Post } from "@/types/post.type";
 
+
+
+
 type PostCardProps = {
   post: Post;
 };
