@@ -1,29 +1,14 @@
-import { useEffect } from "react";
+import NotificationCard from "@/components/notifications/NotificationCard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "@/components/ui/toast";
-import { axiosInstance } from "@/lib/axios";
-import type { NotificationItem } from "@/types/notification.type";
-import type { ErrorResponse, Response } from "@/types/response.type";
-import { useQuery } from "@tanstack/react-query";
-import type { AxiosError } from "axios";
-import { Heart, LucideLoader2, MessageSquare, UserPlus } from "lucide-react";
+import { useNotifications } from "@/hooks/use-notifications";
+import { LucideLoader2 } from "lucide-react";
+import { useEffect } from "react";
 
 export const Notifications = () => {
-  const { data, isLoading, isError, error } = useQuery<
-    Response<NotificationItem[]>,
-    AxiosError<ErrorResponse<string>>
-  >({
-    queryKey: ["notifications"],
-    queryFn: async () => {
-      const response =
-        await axiosInstance.get<Response<NotificationItem[]>>(
-          "/api/notifications",
-        );
-      return response.data;
-    },
-  });
+  const { data, isLoading, isError, error } = useNotifications();
 
   useEffect(() => {
     if (isError && error) {
@@ -81,59 +66,11 @@ export const Notifications = () => {
             </div>
           ) : (
             <div className="space-y-3 pb-6">
-              {notifications.map((item) => (
-                <div
-                  key={item.id}
-                  className={`flex items-start gap-3 p-3.5 rounded-xl border transition-all ${
-                    !item.read
-                      ? "bg-secondary border-border"
-                      : "bg-transparent border-transparent"
-                  }`}
-                >
-                  <img
-                    src="/user_profile.svg"
-                    alt="Avatar"
-                    className="size-10 rounded-full object-cover shrink-0"
-                  />
-
-                  <div className="flex-1 space-y-2 text-sm">
-                    <div className="flex items-center gap-1.5 flex-wrap">
-                      {item.type === "FOLLOW" && (
-                        <UserPlus className="size-4 text-green-500 shrink-0" />
-                      )}
-                      {item.type === "COMMENT" && (
-                        <MessageSquare className="size-4 text-blue-500 shrink-0" />
-                      )}
-                      {item.type === "LIKE" && (
-                        <Heart className="size-4 text-rose-500 shrink-0" />
-                      )}
-
-                      <span className="font-semibold">{item.creator.name}</span>
-                      <span className="text-muted-foreground">
-                        {item.type === "FOLLOW" && "started following you"}
-                        {item.type === "LIKE" && "liked your post"}
-                        {item.type === "COMMENT" && "commented on your post"}
-                      </span>
-                    </div>
-
-                    {(item.post?.content || item.comment?.content) && (
-                      <div className="p-2.5 rounded-lg bg-muted text-xs text-muted-foreground">
-                        {item.post?.content || item.comment?.content}
-                      </div>
-                    )}
-
-                    <p className="text-xs text-muted-foreground">
-                      {new Date(item.createdAt).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </p>
-                  </div>
-
-                  {!item.read && (
-                    <span className="size-2 rounded-full bg-blue-500 shrink-0 mt-2" />
-                  )}
-                </div>
+              {notifications.map((notification) => (
+                <NotificationCard
+                  key={notification.id}
+                  notification={notification}
+                />
               ))}
             </div>
           )}
