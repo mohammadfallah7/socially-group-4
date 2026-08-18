@@ -2,8 +2,13 @@ import { useState } from "react";
 import { Heart, MessageCircle, Send } from "lucide-react";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
+import type { Post } from "@/types/post.type";
 
-const PostCard = () => {
+type PostCardProps = {
+  post: Post;
+};
+
+const PostCard = ({ post }: PostCardProps) => {
   const [addComment, setAddComment] = useState(false);
 
   return (
@@ -19,16 +24,16 @@ const PostCard = () => {
 
           <div className="flex items-center gap-4">
             <div className="flex flex-col gap-1 lg:flex-row lg:items-center">
-              <h2 className="text-lg font-medium">naem-brm</h2>
+              <h2 className="text-lg font-medium">{post.author.name}</h2>
               <span className="text-muted-foreground">@naem-brm</span>
             </div>
 
-            <span className="text-muted-foreground">about 13 hours ago</span>
+            <span className="text-muted-foreground">{post.createdAt}</span>
           </div>
         </div>
 
         {/* Post */}
-        <p>hellooooo</p>
+        <p>{post.content}</p>
 
         {/* Actions */}
         <div className="flex gap-6 text-muted-foreground">
