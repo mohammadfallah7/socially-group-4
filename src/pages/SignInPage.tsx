@@ -8,18 +8,63 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { toast } from "@/components/ui/toast";
+import { axiosInstance } from "@/lib/axios";
+import type { LoginResponse } from "@/types/auth.type";
+import type { ErrorResponse, Response } from "@/types/response.type";
+import { useMutation } from "@tanstack/react-query";
+import type { AxiosError } from "axios";
+import { LucideLoader2 } from "lucide-react";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router";
 
 const SignInPage = () => {
+  const [formValues, setFormValues] = useState({ email: "", password: "" });
+  const navigate = useNavigate();
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: async (payload: { email: string; password: string }) => {
+      const response = await axiosInstance.post<Response<LoginResponse>>(
+        "/api/authentication/login",
+        payload,
+      );
+      return response.data;
+    },
+    onSuccess: (data) => {
+      toast.add({ type: "success", description: data.message });
+      navigate(data.data.url);
+    },
+    onError: (error: AxiosError<ErrorResponse<string>>) => {
+      toast.add({ type: "error", description: error.response?.data.error });
+    },
+  });
+
+  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!formValues.email || !formValues.password) {
+      return toast.add({ type: "error", description: "Fields are required" });
+    }
+    if (formValues.password.length <= 8) {
+      return toast.add({
+        type: "error",
+        description: "Password field must be at least 8 characters",
+      });
+    }
+
+    mutate(formValues);
+  };
+
   return (
     <main className="flex flex-col gap-6 justify-center items-center min-h-screen bg-muted px-10">
       <Card className="p-0 w-full max-w-sm md:max-w-4xl flex-row gap-0">
-        <div
+        <form
+          onSubmit={handleSubmit}
           id="signUpContainer"
-          className=" rounded-l-xl h-full  border  items-center flex flex-col flex-1 p-2 md:py-4 md:px-4 gap-7 *:w-full"
+          className="rounded-l-xl h-full border items-center flex flex-col flex-1 p-2 md:py-4 md:px-4 gap-7 *:w-full"
         >
           <CardHeader className="flex flex-col items-center gap-3 mt-6">
             <CardTitle className="text-2xl font-bold">Welcome back</CardTitle>
-
             <CardDescription>Login to your Socially account</CardDescription>
           </CardHeader>
 
@@ -30,42 +75,61 @@ const SignInPage = () => {
                 id="email"
                 type="email"
                 placeholder="m@example.com"
-                className=" shadow-xs shadow-accent py-1 px-3 rounded-[8px] h-9"
+                value={formValues.email}
+                onChange={(e) =>
+                  setFormValues({ ...formValues, email: e.target.value })
+                }
+                className="shadow-xs shadow-accent py-1 px-3 rounded-[8px] h-9"
+                required
               />
             </div>
           </CardContent>
+
           <CardContent>
             <div className="space-y-2 flex flex-col gap-0.75">
               <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
                 type="password"
-                className=" shadow-xs shadow-accent py-1 px-3 rounded-[8px] h-9"
+                value={formValues.password}
+                onChange={(e) =>
+                  setFormValues({ ...formValues, password: e.target.value })
+                }
+                className="shadow-xs shadow-accent py-1 px-3 rounded-[8px] h-9"
+                required
               />
             </div>
           </CardContent>
+
           <CardContent>
-            <div className="  h-5 flex align-middle font-medium text-[14px]">
-              <Button className="w-full font-medium text-[14px] py-2 px-4 h-9 cursor-pointer">
+            <div className="h-5 flex align-middle font-medium text-[14px]">
+              <Button
+                type="submit"
+                disabled={isPending}
+                className="w-full font-medium text-[14px] py-2 px-4 h-9 cursor-pointer"
+              >
+                {isPending && <LucideLoader2 className="size-4 animate-spin" />}
                 Login
               </Button>
             </div>
           </CardContent>
+
           <CardContent>
             <div className="m-4">
               <p className="text-center text-sm text-muted-foreground">
                 Don't have an account?{" "}
-                <a
-                  href="/sign-up"
+                <Link
+                  to="/sign-up"
                   className="text-muted-foreground underline underline-offset-4 hover:text-foreground"
                 >
                   Sign up
-                </a>
+                </Link>
               </p>
             </div>
           </CardContent>
-        </div>
-        <div className=" hidden md:block md:flex-1  bg-muted"></div>
+        </form>
+
+        <div className="hidden md:block md:flex-1 bg-muted"></div>
       </Card>
 
       <p className="text-center text-sm font-normal text-muted-foreground w-xs md:w-1/2">

@@ -1,6 +1,3 @@
-import { useState } from "react";
-import axios from "axios";
-
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,99 +8,94 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { toast } from "@/components/ui/toast";
+import { axiosInstance } from "@/lib/axios";
+import type { ErrorResponse, Response } from "@/types/response.type";
+import type { AxiosError } from "axios";
+import { useMutation } from "@tanstack/react-query";
+import { LucideLoader2 } from "lucide-react";
+import { useState } from "react";
+import type { SubmitEvent } from "react";
+import { Link, useNavigate } from "react-router";
 
-import type { SignUpForm } from "@/types/auth";
+import type { SignUpFormValues } from "@/types/auth";
 
 const SignUpPage = () => {
-  const [formData, setFormData] = useState<SignUpForm>({
+  const navigate = useNavigate();
+
+  const [formData, setFormData] = useState<SignUpFormValues>({
     name: "",
     email: "",
     password: "",
   });
 
-  const [loading, setLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-
-    setErrorMessage("");
-    setSuccessMessage("");
-  };
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    setErrorMessage("");
-    setSuccessMessage("");
-
-    if (!formData.name.trim()) {
-      setErrorMessage("Please enter your name.");
-      return;
-    }
-
-    if (!formData.email.trim()) {
-      setErrorMessage("Please enter your email.");
-      return;
-    }
-
-    if (!formData.password) {
-      setErrorMessage("Please enter your password.");
-      return;
-    }
-
-    if (formData.password.length < 8) {
-      setErrorMessage("Password must be at least 8 characters.");
-      return;
-    }
-
-    try {
-      setLoading(true);
-
-      await axios.post(
-        "https://socially-nextjs-six.vercel.app/api/authentication/register",
-        formData,
+  const { mutate, isPending } = useMutation({
+    mutationFn: async (payload: SignUpFormValues) => {
+      const response = await axiosInstance.post<Response<null>>(
+        "/api/authentication/register",
+        payload,
       );
 
-      setSuccessMessage("Your account has been created successfully.");
+      return response.data;
+    },
+
+    onSuccess: (data) => {
+      toast.add({
+        type: "success",
+        description: data.message,
+      });
 
       setFormData({
         name: "",
         email: "",
         password: "",
       });
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        const apiError = error.response?.data;
 
-        const message =
-          typeof apiError?.error === "string"
-            ? apiError.error
-            : typeof apiError?.message === "string"
-              ? apiError.message
-              : "Registration failed. Please try again.";
+      navigate("/");
+    },
 
-        setErrorMessage(message);
-      } else {
-        setErrorMessage("Something went wrong. Please try again later.");
-      }
-    } finally {
-      setLoading(false);
+    onError: (error: AxiosError<ErrorResponse<string>>) => {
+      toast.add({
+        type: "error",
+        description: error.response?.data.error || "Registration failed.",
+      });
+    },
+  });
+
+  const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!formData.name || !formData.email || !formData.password) {
+      return toast.add({
+        type: "error",
+        description: "Fields are required",
+      });
     }
+
+    if (!formData.email.includes("@")) {
+      return toast.add({
+        type: "error",
+        description: "Email must contain @",
+      });
+    }
+
+    if (formData.password.length < 8) {
+      return toast.add({
+        type: "error",
+        description: "Password field must be at least 8 characters",
+      });
+    }
+
+    mutate(formData);
   };
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center gap-6 bg-muted px-10">
       <Card className="flex w-full max-w-sm flex-row gap-0 p-0 md:max-w-4xl">
         <form
-          id="signUpContainer"
           onSubmit={handleSubmit}
+          noValidate
+          id="signUpContainer"
           className="flex h-full flex-1 flex-col items-center gap-7 rounded-l-xl border p-2 md:px-4 md:py-4 [&>*]:w-full"
         >
           <CardHeader className="mt-6 flex flex-col items-center gap-3">
@@ -116,31 +108,23 @@ const SignUpPage = () => {
             </CardDescription>
           </CardHeader>
 
-          {errorMessage && (
-            <div className="mx-4 rounded-md border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-              {errorMessage}
-            </div>
-          )}
-
-          {successMessage && (
-            <div className="mx-4 rounded-md border border-green-500/30 bg-green-500/10 px-4 py-3 text-sm text-green-600">
-              {successMessage}
-            </div>
-          )}
-
           <CardContent>
             <div className="flex flex-col space-y-2">
               <Label htmlFor="name">Name</Label>
 
               <Input
                 id="name"
-                name="name"
                 type="text"
                 placeholder="Enter your name"
                 value={formData.name}
-                onChange={handleChange}
-                disabled={loading}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    name: e.target.value,
+                  })
+                }
                 className="h-9 rounded-[8px] px-3 py-1 shadow-xs shadow-accent"
+                required
               />
             </div>
           </CardContent>
@@ -151,13 +135,17 @@ const SignUpPage = () => {
 
               <Input
                 id="email"
-                name="email"
                 type="email"
                 placeholder="m@example.com"
                 value={formData.email}
-                onChange={handleChange}
-                disabled={loading}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    email: e.target.value,
+                  })
+                }
                 className="h-9 rounded-[8px] px-3 py-1 shadow-xs shadow-accent"
+                required
               />
             </div>
           </CardContent>
@@ -168,37 +156,45 @@ const SignUpPage = () => {
 
               <Input
                 id="password"
-                name="password"
                 type="password"
                 placeholder="Enter your password"
                 value={formData.password}
-                onChange={handleChange}
-                disabled={loading}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    password: e.target.value,
+                  })
+                }
                 className="h-9 rounded-[8px] px-3 py-1 shadow-xs shadow-accent"
+                required
               />
             </div>
           </CardContent>
 
           <CardContent>
-            <Button
-              type="submit"
-              disabled={loading}
-              className="h-9 w-full cursor-pointer px-4 py-2 text-[14px] font-medium"
-            >
-              {loading ? "Creating account..." : "Create Account"}
-            </Button>
+            <div className="flex align-middle font-medium text-[14px]">
+              <Button
+                type="submit"
+                disabled={isPending}
+                className="h-9 w-full cursor-pointer px-4 py-2 text-[14px] font-medium"
+              >
+                {isPending && <LucideLoader2 className="size-4 animate-spin" />}
+
+                {isPending ? "Creating..." : "Create Account"}
+              </Button>
+            </div>
           </CardContent>
 
           <CardContent>
             <div className="m-4">
               <p className="text-center text-sm text-muted-foreground">
                 Already have an account?{" "}
-                <a
-                  href="/sign-in"
-                  className="underline underline-offset-4 hover:text-foreground"
+                <Link
+                  to="/sign-in"
+                  className="text-muted-foreground underline underline-offset-4 hover:text-foreground"
                 >
                   Sign in
-                </a>
+                </Link>
               </p>
             </div>
           </CardContent>
