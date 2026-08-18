@@ -9,58 +9,21 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/toast";
-import { axiosInstance } from "@/lib/axios";
-import type { ErrorResponse, Response } from "@/types/response.type";
-import type { AxiosError } from "axios";
-import { useMutation } from "@tanstack/react-query";
+import { useRegister } from "@/hooks/use-register";
+import type { SignUpFormValues } from "@/types/auth.type";
 import { LucideLoader2 } from "lucide-react";
-import { useState } from "react";
 import type { SubmitEvent } from "react";
-import { Link, useNavigate } from "react-router";
-
-import type { SignUpFormValues } from "@/types/auth";
+import { useState } from "react";
+import { Link } from "react-router";
 
 const SignUpPage = () => {
-  const navigate = useNavigate();
-
   const [formData, setFormData] = useState<SignUpFormValues>({
     name: "",
     email: "",
     password: "",
   });
 
-  const { mutate, isPending } = useMutation({
-    mutationFn: async (payload: SignUpFormValues) => {
-      const response = await axiosInstance.post<Response<null>>(
-        "/api/authentication/register",
-        payload,
-      );
-
-      return response.data;
-    },
-
-    onSuccess: (data) => {
-      toast.add({
-        type: "success",
-        description: data.message,
-      });
-
-      setFormData({
-        name: "",
-        email: "",
-        password: "",
-      });
-
-      navigate("/");
-    },
-
-    onError: (error: AxiosError<ErrorResponse<string>>) => {
-      toast.add({
-        type: "error",
-        description: error.response?.data.error || "Registration failed.",
-      });
-    },
-  });
+  const { mutate, isPending } = useRegister();
 
   const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -94,7 +57,6 @@ const SignUpPage = () => {
       <Card className="flex w-full max-w-sm flex-row gap-0 p-0 md:max-w-4xl">
         <form
           onSubmit={handleSubmit}
-          noValidate
           id="signUpContainer"
           className="flex h-full flex-1 flex-col items-center gap-7 rounded-l-xl border p-2 md:px-4 md:py-4 [&>*]:w-full"
         >
