@@ -8,14 +8,20 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { LucideLink, LucideMapPin } from "lucide-react";
+import { useSessionStore } from "@/stores/session.store";
+import type { Session } from "@/types/session.type";
+import { getUsernameFromEmail } from "@/lib/utils";
 
-const SignInSidebar = () => {
+const SignInSidebar = ({ session }: { session: Session }) => {
+  // session.user.id
+  // session.session.userId
+
   return (
     <Card className="w-full">
       <CardHeader>
         <Link
           className="flex flex-col items-center justify-center gap-3"
-          to="/@mohammadfallah"
+          to={`/profile/${getUsernameFromEmail(session.user.email)}`}
         >
           <img
             src="/user_profile.svg"
@@ -23,8 +29,10 @@ const SignInSidebar = () => {
             className="size-12 rounded-full object-cover"
           />
           <div className="flex flex-col items-center justify-center text-center gap-1.5">
-            <h2 className="font-semibold text-lg">Mohammad Fallah</h2>
-            <p className="text-sm text-gray-500">@mohammadfallah</p>
+            <h2 className="font-semibold text-lg">{session.user.name}</h2>
+            <p className="text-sm text-gray-500">
+              @{getUsernameFromEmail(session.user.email)}
+            </p>
           </div>
           <p className="text-sm text-gray-500 text-center">Bio</p>
         </Link>
@@ -83,12 +91,12 @@ const SignOutSidebar = () => {
 };
 
 export const Sidebar = () => {
-  const isLoggedIn = true;
+  const { session } = useSessionStore();
 
   return (
     <aside className="hidden lg:block col-span-3">
       <div className="sticky top-24">
-        {isLoggedIn ? <SignInSidebar /> : <SignOutSidebar />}
+        {session ? <SignInSidebar session={session} /> : <SignOutSidebar />}
       </div>
     </aside>
   );
