@@ -9,9 +9,16 @@ import {
   SheetTrigger,
 } from "../ui/sheet";
 import Container from "./Container";
+import { useState } from "react";
+import { useTheme } from "../darkMood/theme-provider";
 
 const Header = () => {
-  const isLoggedIn = true;
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const { theme, setTheme } = useTheme();
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+  };
 
   return (
     <header className="border-b py-5 sticky top-0 z-50 bg-background/80 backdrop-blur-xl">
@@ -24,7 +31,11 @@ const Header = () => {
         {/* Desktop Navigation */}
         <nav className="hidden items-center gap-3 md:flex">
           {/* Theme */}
-          <Button variant="outline" size="icon" onClick={() => {}}>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+          >
             <Moon className="hidden size-4 dark:block" />
             <Sun className="size-4 dark:hidden" />
           </Button>
@@ -54,19 +65,25 @@ const Header = () => {
               </Button>
 
               {/* Logout */}
-              <Button variant="ghost" size="lg">
+              <Button variant="ghost" size="lg" onClick={handleLogout}>
                 <LogOut className="size-4" />
               </Button>
             </>
           ) : (
-            <Button size="lg">Sign in</Button>
+            <Button size="lg" render={<Link to="/sign-in" />}>
+              Sign in
+            </Button>
           )}
         </nav>
 
         {/* Mobile Navigation */}
         <div className="flex items-center gap-2 md:hidden">
           {/* Theme */}
-          <Button variant="outline" size="icon" onClick={() => {}}>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+          >
             <Moon className="hidden size-4 dark:block" />
             <Sun className="size-4 dark:hidden" />
           </Button>
@@ -122,12 +139,17 @@ const Header = () => {
                       variant="ghost"
                       size="lg"
                       className="w-full justify-center"
+                      onClick={handleLogout}
                     >
                       <LogOut className="size-4" />
                     </Button>
                   </>
                 ) : (
-                  <Button size="lg" className="w-full">
+                  <Button
+                    render={<Link to="/sign-in" />}
+                    size="lg"
+                    className="w-full"
+                  >
                     Sign in
                   </Button>
                 )}
