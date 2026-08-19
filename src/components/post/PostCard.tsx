@@ -1,9 +1,16 @@
-import { useState } from "react";
+import { getUsernameFromEmail } from "@/lib/utils";
+import type { Post } from "@/types/post.type";
+import { formatDistanceToNow } from "date-fns";
 import { Heart, MessageCircle, Send } from "lucide-react";
+import { useState } from "react";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
 
-const PostCard = () => {
+type PostCardProps = {
+  post: Post;
+};
+
+const PostCard = ({ post }: PostCardProps) => {
   const [addComment, setAddComment] = useState(false);
 
   return (
@@ -18,22 +25,29 @@ const PostCard = () => {
           />
 
           <div className="flex items-center gap-4">
-            <div className="flex flex-col gap-1 lg:flex-row lg:items-center">
-              <h2 className="text-lg font-medium">naem-brm</h2>
-              <span className="text-muted-foreground">@naem-brm</span>
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
+              <h2 className="text-lg font-medium">{post.author.name}</h2>
+              <span className="text-muted-foreground">
+                @{getUsernameFromEmail(post.author.email)}
+              </span>
             </div>
 
-            <span className="text-muted-foreground">about 13 hours ago</span>
+            <span className="text-muted-foreground">
+              {formatDistanceToNow(new Date(post.createdAt), {
+                addSuffix: true,
+              })}
+            </span>
           </div>
         </div>
 
         {/* Post */}
-        <p>hellooooo</p>
+        <p>{post.content}</p>
 
         {/* Actions */}
         <div className="flex gap-6 text-muted-foreground">
           <Button variant="ghost" className="cursor-pointer">
-            <Heart />1
+            <Heart />
+            {post._count.likes}
           </Button>
 
           <Button
@@ -41,81 +55,41 @@ const PostCard = () => {
             className="cursor-pointer"
             onClick={() => setAddComment((prev) => !prev)}
           >
-            <MessageCircle />3
+            <MessageCircle />
+            {post._count.comments}
           </Button>
         </div>
 
         {/* Comments */}
         {addComment && (
           <div className="border-t pt-5 flex flex-col gap-5">
-            {/* Comment 1 */}
-            <div className="flex flex-col gap-3">
-              <div className="flex items-center gap-3">
-                <img
-                  src="/user_profile.svg"
-                  alt="Avatar"
-                  className="size-8 rounded-full object-cover"
-                />
-
+            {post.comments.map((comment) => (
+              <div key={comment.id} className="flex flex-col gap-3">
                 <div className="flex items-center gap-3">
-                  <h3 className="font-medium">sepehr</h3>
-                  <span className="text-sm text-muted-foreground">
-                    @sepehrtaale
-                  </span>
-                  <span className="text-sm text-muted-foreground">
-                    1 day ago
-                  </span>
+                  <img
+                    src={comment.author.image || "/user_profile.svg"}
+                    alt="Avatar"
+                    className="size-8 rounded-full object-cover"
+                  />
+
+                  <div className="flex items-center gap-3">
+                    <h3 className="font-medium">{comment.author.name}</h3>
+
+                    <span className="text-sm text-muted-foreground">
+                      @{getUsernameFromEmail(comment.author.email)}
+                    </span>
+
+                    <span className="text-sm text-muted-foreground">
+                      {formatDistanceToNow(new Date(comment.createdAt), {
+                        addSuffix: true,
+                      })}
+                    </span>
+                  </div>
                 </div>
+
+                <p className="text-sm">{comment.content}</p>
               </div>
-
-              <p className="text-sm">hello</p>
-            </div>
-
-            {/* Comment 2 */}
-            <div className="flex flex-col gap-3">
-              <div className="flex items-center gap-3">
-                <img
-                  src="/user_profile.svg"
-                  alt="Avatar"
-                  className="size-8 rounded-full object-cover"
-                />
-
-                <div className="flex items-center gap-3">
-                  <h3 className="font-medium">sepehr</h3>
-                  <span className="text-sm text-muted-foreground">
-                    @sepehrtaale
-                  </span>
-                  <span className="text-sm text-muted-foreground">
-                    about 17 hours ago
-                  </span>
-                </div>
-              </div>
-
-              <p className="text-sm">hhhhhhhhhhhh</p>
-            </div>
-
-            {/* Comment 3 */}
-            <div className="flex flex-col gap-3">
-              <div className="flex items-center gap-3">
-                <img
-                  src="/user_profile.svg"
-                  alt="Avatar"
-                  className="size-8 rounded-full object-cover"
-                />
-
-                <div className="flex items-center gap-3">
-                  <h3 className="font-medium">sepehr</h3>
-                  <span className="text-sm text-muted-foreground">
-                    @sepehrtaale
-                  </span>
-                  <span className="text-sm text-muted-foreground">
-                    about 17 hours ago
-                  </span>
-                </div>
-              </div>
-
-              <p className="text-sm">hhhhhh</p>
-            </div>
+            ))}
 
             {/* Add Comment */}
             <div className="flex items-start gap-3 border-t pt-5">

@@ -4,7 +4,6 @@ import { LucideLink, LucideMapPin } from "lucide-react";
 import { useParams } from "react-router";
 import { LucideCalendar } from "lucide-react";
 import { useState } from "react";
-import PostCard from "@/components/post/PostCard";
 const ProfilePage = () => {
   const { username } = useParams();
   const [activeTab, setActiveTab] = useState<"posts" | "likes">("posts");
@@ -88,22 +87,10 @@ const ProfilePage = () => {
         </div>
 
         {/* Posts */}
-        {activeTab === "posts" && (
-          <div>
-            <PostCard />
-            <PostCard />
-            <PostCard />
-            <PostCard />
-            <PostCard />
-          </div>
-        )}
+        {activeTab === "posts" && <div></div>}
 
         {/* Likes */}
-        {activeTab === "likes" && (
-          <div>
-            <PostCard />
-          </div>
-        )}
+        {activeTab === "likes" && <div></div>}
       </div>
     </div>
   );
