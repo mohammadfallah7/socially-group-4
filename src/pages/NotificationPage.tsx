@@ -3,12 +3,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "@/components/ui/toast";
-import { useNotifications } from "@/hooks/use-notifications";
+import { useMarkAsRead, useNotifications } from "@/hooks/use-notifications";
 import { LucideLoader2 } from "lucide-react";
 import { useEffect } from "react";
 
-export const Notifications = () => {
+export const NotificationPage = () => {
   const { data, isLoading, isError, error } = useNotifications();
+  const { mutate: markAsRead } = useMarkAsRead();
 
   useEffect(() => {
     if (isError && error) {
@@ -30,7 +31,18 @@ export const Notifications = () => {
   const notifications = data?.data || [];
   const unreadCount = notifications.filter((n) => !n.read).length;
 
-  const handleMarkAllAsRead = () => {};
+  const handleMarkAllAsRead = () => {
+    const unreadIds = notifications.filter((n) => !n.read).map((n) => n.id);
+    if (unreadIds.length > 0) {
+      markAsRead(unreadIds);
+    }
+  };
+
+  const handleItemClick = (id: string, isRead: boolean) => {
+    if (!isRead) {
+      markAsRead([id]);
+    }
+  };
 
   return (
     <Card className="w-full flex flex-col">
@@ -64,13 +76,20 @@ export const Notifications = () => {
                 ? "Please login to view notifications."
                 : "Failed to load notifications."}
             </div>
+          ) : notifications.length === 0 ? (
+            <div className="text-center py-12 text-sm text-muted-foreground">
+              You have no notifications
+            </div>
           ) : (
             <div className="space-y-3 pb-6">
-              {notifications.map((notification) => (
-                <NotificationCard
-                  key={notification.id}
-                  notification={notification}
-                />
+              {notifications.map((item) => (
+                <div
+                  key={item.id}
+                  onClick={() => handleItemClick(item.id, item.read)}
+                  className="cursor-pointer"
+                >
+                  <NotificationCard notification={item} />
+                </div>
               ))}
             </div>
           )}
@@ -80,4 +99,4 @@ export const Notifications = () => {
   );
 };
 
-export default Notifications;
+export default NotificationPage;
