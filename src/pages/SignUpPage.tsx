@@ -8,65 +8,145 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { toast } from "@/components/ui/toast";
+import { useRegister } from "@/hooks/use-register";
+import type { SignUpFormValues } from "@/types/auth.type";
+import { LucideLoader2 } from "lucide-react";
+import type { SubmitEvent } from "react";
+import { useState } from "react";
 import { Link } from "react-router";
 
 const SignUpPage = () => {
+  const [formData, setFormData] = useState<SignUpFormValues>({
+    name: "",
+    email: "",
+    password: "",
+  });
+
+  const { mutate, isPending } = useRegister();
+
+  const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!formData.name || !formData.email || !formData.password) {
+      return toast.add({
+        type: "error",
+        description: "Fields are required",
+      });
+    }
+
+    if (!formData.email.includes("@")) {
+      return toast.add({
+        type: "error",
+        description: "Email must contain @",
+      });
+    }
+
+    if (formData.password.length < 8) {
+      return toast.add({
+        type: "error",
+        description: "Password field must be at least 8 characters",
+      });
+    }
+
+    mutate(formData);
+  };
+
   return (
-    <main className="flex flex-col gap-6 justify-center items-center min-h-screen bg-muted px-10">
-      <Card className="p-0 w-full max-w-sm md:max-w-4xl flex-row gap-0">
-        <div
+    <main className="flex min-h-screen flex-col items-center justify-center gap-6 bg-muted px-10">
+      <Card className="flex w-full max-w-sm flex-row gap-0 p-0 md:max-w-4xl">
+        <form
+          onSubmit={handleSubmit}
           id="signUpContainer"
-          className=" rounded-l-xl h-full  border  items-center flex flex-col flex-1 p-2 md:py-4 md:px-4 gap-7 *:w-full"
+          className="flex h-full flex-1 flex-col items-center gap-7 rounded-l-xl border p-2 md:px-4 md:py-4 [&>*]:w-full"
         >
-          <CardHeader className="flex flex-col items-center gap-3 mt-6">
+          <CardHeader className="mt-6 flex flex-col items-center gap-3">
             <CardTitle className="text-2xl font-bold">
               Create your account
             </CardTitle>
 
             <CardDescription>
-              Enter your email below to create your account
+              Enter your information below to create your account
             </CardDescription>
           </CardHeader>
 
           <CardContent>
-            <div className="space-y-2 flex flex-col gap-0.75">
+            <div className="flex flex-col space-y-2">
               <Label htmlFor="name">Name</Label>
+
               <Input
                 id="name"
                 type="text"
                 placeholder="Enter your name"
-                className="shadow-xs shadow-accent py-1 px-3 rounded-[8px] h-9"
+                value={formData.name}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    name: e.target.value,
+                  })
+                }
+                className="h-9 rounded-[8px] px-3 py-1 shadow-xs shadow-accent"
+                required
               />
             </div>
           </CardContent>
+
           <CardContent>
-            <div className="space-y-2 flex flex-col gap-0.75">
+            <div className="flex flex-col space-y-2">
               <Label htmlFor="email">Email</Label>
+
               <Input
                 id="email"
                 type="email"
                 placeholder="m@example.com"
-                className=" shadow-xs shadow-accent py-1 px-3 rounded-[8px] h-9"
+                value={formData.email}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    email: e.target.value,
+                  })
+                }
+                className="h-9 rounded-[8px] px-3 py-1 shadow-xs shadow-accent"
+                required
               />
             </div>
           </CardContent>
+
           <CardContent>
-            <div className="space-y-2 flex flex-col gap-0.75">
+            <div className="flex flex-col space-y-2">
               <Label htmlFor="password">Password</Label>
+
               <Input
                 id="password"
                 type="password"
-                className=" shadow-xs shadow-accent py-1 px-3 rounded-[8px] h-9"
+                placeholder="Enter your password"
+                value={formData.password}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    password: e.target.value,
+                  })
+                }
+                className="h-9 rounded-[8px] px-3 py-1 shadow-xs shadow-accent"
+                required
               />
             </div>
           </CardContent>
+
           <CardContent>
-            <div className="  h-5 flex align-middle font-medium text-[14px]">
-              <Button className="w-full font-medium text-[14px] py-2 px-4 h-9 cursor-pointer">
-                Create Account
+            <div className="flex align-middle font-medium text-[14px]">
+              <Button
+                type="submit"
+                disabled={isPending}
+                className="h-9 w-full cursor-pointer px-4 py-2 text-[14px] font-medium"
+              >
+                {isPending && <LucideLoader2 className="size-4 animate-spin" />}
+
+                {isPending ? "Creating..." : "Create Account"}
               </Button>
             </div>
           </CardContent>
+
           <CardContent>
             <div className="m-4">
               <p className="text-center text-sm text-muted-foreground">
@@ -80,11 +160,12 @@ const SignUpPage = () => {
               </p>
             </div>
           </CardContent>
-        </div>
-        <div className=" hidden md:block md:flex-1  bg-muted"></div>
+        </form>
+
+        <div className="hidden bg-muted md:block md:flex-1" />
       </Card>
 
-      <p className="text-center text-sm font-normal text-muted-foreground w-xs md:w-1/2">
+      <p className="w-xs text-center text-sm font-normal text-muted-foreground md:w-1/2">
         By clicking continue, you agree to our{" "}
         <a
           href="#"

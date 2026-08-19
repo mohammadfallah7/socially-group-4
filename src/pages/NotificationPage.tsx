@@ -1,61 +1,36 @@
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import NotificationCard from "@/components/notifications/NotificationCard";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { MessageSquare, Heart, UserPlus } from "lucide-react";
-
-const INITIAL_NOTIFICATIONS = [
-  {
-    id: 1,
-    type: "follow",
-    user: "کیومرث",
-    avatar: "/user_profile.svg",
-    action: "started following you",
-    time: "36 minutes ago",
-    isUnread: true,
-  },
-  {
-    id: 2,
-    type: "comment",
-    user: "کیومرث",
-    avatar: "/user_profile.svg",
-    action: "liked your post",
-    postContent: "helloooo",
-    time: "38 minutes ago",
-    isUnread: true,
-  },
-  {
-    id: 3,
-    type: "like",
-    user: "naem-bm",
-    avatar: "/user_profile.svg",
-    action: "liked your post",
-    postContent: "helloooo",
-    time: "about 1 hour ago",
-    isUnread: true,
-  },
-  {
-    id: 4,
-    type: "like",
-    user: "salar",
-    avatar: "/user_profile.svg",
-    action: "liked your post",
-    postContent: "helloooo",
-    time: "about 1 hour ago",
-    isUnread: true,
-  },
-];
+import { toast } from "@/components/ui/toast";
+import { useNotifications } from "@/hooks/use-notifications";
+import { LucideLoader2 } from "lucide-react";
+import { useEffect } from "react";
 
 export const Notifications = () => {
-  const [notifications, setNotifications] = useState(INITIAL_NOTIFICATIONS);
+  const { data, isLoading, isError, error } = useNotifications();
 
-  const unreadCount = notifications.filter((n) => n.isUnread).length;
+  useEffect(() => {
+    if (isError && error) {
+      if (error.response?.status === 401) {
+        toast.add({
+          type: "error",
+          description: "Please login first to view notifications",
+        });
+      } else {
+        toast.add({
+          type: "error",
+          description:
+            error.response?.data?.error || "Failed to load notifications",
+        });
+      }
+    }
+  }, [isError, error]);
 
-  const handleMarkAllAsRead = () => {
-    setNotifications((prev) =>
-      prev.map((item) => ({ ...item, isUnread: false })),
-    );
-  };
+  const notifications = data?.data || [];
+  const unreadCount = notifications.filter((n) => !n.read).length;
+
+  const handleMarkAllAsRead = () => {};
 
   return (
     <Card className="w-full flex flex-col">
@@ -79,53 +54,26 @@ export const Notifications = () => {
 
       <CardContent className="p-0">
         <ScrollArea className="h-96 px-6">
-          <div className="space-y-3 pb-6">
-            {notifications.map((item) => (
-              <div
-                key={item.id}
-                className={`flex items-start gap-3 p-3.5 rounded-xl border transition-all ${
-                  item.isUnread
-                    ? "bg-secondary border-border"
-                    : "bg-transparent border-transparent"
-                }`}
-              >
-                <img
-                  src={item.avatar}
-                  alt="Avatar"
-                  className="size-10 rounded-full object-cover shrink-0"
+          {isLoading ? (
+            <div className="flex justify-center items-center h-40">
+              <LucideLoader2 className="size-6 animate-spin text-muted-foreground" />
+            </div>
+          ) : isError ? (
+            <div className="text-center py-10 text-sm text-muted-foreground">
+              {error.response?.status === 401
+                ? "Please login to view notifications."
+                : "Failed to load notifications."}
+            </div>
+          ) : (
+            <div className="space-y-3 pb-6">
+              {notifications.map((notification) => (
+                <NotificationCard
+                  key={notification.id}
+                  notification={notification}
                 />
-
-                <div className="flex-1 space-y-2 text-sm">
-                  <div className="flex items-center gap-1.5 flex-wrap">
-                    {item.type === "follow" && (
-                      <UserPlus className="size-4 text-green-500 shrink-0" />
-                    )}
-                    {item.type === "comment" && (
-                      <MessageSquare className="size-4 text-blue-500 shrink-0" />
-                    )}
-                    {item.type === "like" && (
-                      <Heart className="size-4 text-rose-500 shrink-0" />
-                    )}
-
-                    <span className="font-semibold">{item.user}</span>
-                    <span className="text-muted-foreground">{item.action}</span>
-                  </div>
-
-                  {item.postContent && (
-                    <div className="p-2.5 rounded-lg bg-muted text-xs text-muted-foreground">
-                      {item.postContent}
-                    </div>
-                  )}
-
-                  <p className="text-xs text-muted-foreground">{item.time}</p>
-                </div>
-
-                {item.isUnread && (
-                  <span className="size-2 rounded-full bg-blue-500 shrink-0 mt-2" />
-                )}
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </ScrollArea>
       </CardContent>
     </Card>
