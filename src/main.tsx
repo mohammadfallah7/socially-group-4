@@ -4,6 +4,7 @@ import { createRoot } from "react-dom/client";
 import { RouterProvider } from "react-router";
 import { ThemeProvider } from "./components/ThemeProvider.tsx";
 import { Toaster } from "./components/ui/toast.tsx";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import "./index.css";
 import router from "./router.tsx";
 
@@ -15,6 +16,7 @@ createRoot(document.getElementById("root")!).render(
       <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
         <RouterProvider router={router} />
         <Toaster />
+        <ReactQueryDevtools />
       </ThemeProvider>
     </QueryClientProvider>
   </StrictMode>,

@@ -1,7 +1,6 @@
 import RecommendedUsers from "./components/layout/RecommendedUsers";
 import PostList from "./components/post/PostList";
 
-
 const App = () => {
   return (
     <div className="grid lg:grid-cols-9 gap-5">
