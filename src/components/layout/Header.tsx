@@ -1,5 +1,7 @@
-import { Bell, Home, LogOut, Menu, Moon, Sun, User } from "lucide-react";
+import { Bell, Home, LogOut, Menu, User } from "lucide-react";
+import { useState } from "react";
 import { Link } from "react-router";
+import { ModeToggle } from "../ModeToggle";
 import { Button } from "../ui/button";
 import {
   Sheet,
@@ -9,12 +11,9 @@ import {
   SheetTrigger,
 } from "../ui/sheet";
 import Container from "./Container";
-import { useState } from "react";
-import { useTheme } from "../darkMood/theme-provider";
 
 const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(true);
-  const { theme, setTheme } = useTheme();
 
   const handleLogout = () => {
     setIsLoggedIn(false);
@@ -31,14 +30,7 @@ const Header = () => {
         {/* Desktop Navigation */}
         <nav className="hidden items-center gap-3 md:flex">
           {/* Theme */}
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-          >
-            <Moon className="hidden size-4 dark:block" />
-            <Sun className="size-4 dark:hidden" />
-          </Button>
+          <ModeToggle />
 
           {/* Home */}
           <Button render={<Link to="/" />} variant="ghost" size="lg">
@@ -79,14 +71,7 @@ const Header = () => {
         {/* Mobile Navigation */}
         <div className="flex items-center gap-2 md:hidden">
           {/* Theme */}
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-          >
-            <Moon className="hidden size-4 dark:block" />
-            <Sun className="size-4 dark:hidden" />
-          </Button>
+          <ModeToggle />
 
           {/* Mobile Menu */}
           <Sheet>
