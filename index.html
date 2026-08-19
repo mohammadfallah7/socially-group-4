@@ -2,12 +2,35 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+
+    <script>
+      (() => {
+        const storageKey = "vite-ui-theme";
+        const theme = localStorage.getItem(storageKey);
+        const root = document.documentElement;
+
+        if (theme === "dark" || theme === "light") {
+          root.classList.add(theme);
+          return;
+        }
+
+        const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
+          .matches
+          ? "dark"
+          : "light";
+
+        root.classList.add(systemTheme);
+      })();
+    </script>
+
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>socially-group-4</title>
   </head>
+
   <body>
     <div id="root"></div>
+
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
