@@ -73,11 +73,13 @@ const PostCard = ({ post }: PostCardProps) => {
                     <h3 className="font-medium">{comment.author.name}</h3>
 
                     <span className="text-sm text-muted-foreground">
-                      {comment.author.email}
+                      @{getUsernameFromEmail(comment.author.email)}
                     </span>
 
                     <span className="text-sm text-muted-foreground">
-                      {comment.createdAt}
+                      {formatDistanceToNow(new Date(comment.createdAt), {
+                addSuffix: true,
+              })}
                     </span>
                   </div>
                 </div>
