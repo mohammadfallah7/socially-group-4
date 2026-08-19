@@ -1,5 +1,6 @@
+import { getUsernameFromEmail } from "@/lib/utils";
+import { useSessionStore } from "@/stores/session.store";
 import { Bell, Home, LogOut, Menu, User } from "lucide-react";
-import { useState } from "react";
 import { Link } from "react-router";
 import { ModeToggle } from "../ModeToggle";
 import { Button } from "../ui/button";
@@ -13,11 +14,9 @@ import {
 import Container from "./Container";
 
 const Header = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const { session } = useSessionStore();
 
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-  };
+  const handleLogout = () => {};
 
   return (
     <header className="border-b py-5 sticky top-0 z-50 bg-background/80 backdrop-blur-xl">
@@ -38,7 +37,7 @@ const Header = () => {
             Home
           </Button>
 
-          {isLoggedIn ? (
+          {session ? (
             <>
               {/* Notification */}
               <Button
@@ -51,7 +50,15 @@ const Header = () => {
               </Button>
 
               {/* Profile */}
-              <Button render={<Link to="/profile" />} variant="ghost" size="lg">
+              <Button
+                render={
+                  <Link
+                    to={`/profile/${getUsernameFromEmail(session.user.email)}`}
+                  />
+                }
+                variant="ghost"
+                size="lg"
+              >
                 <User className="size-4" />
                 Profile
               </Button>
@@ -89,6 +96,7 @@ const Header = () => {
               <nav className="mt-5 flex flex-col gap-3 px-4">
                 {/* Home */}
                 <Button
+                  render={<Link to="/" />}
                   variant="ghost"
                   size="lg"
                   className="w-full justify-center"
@@ -97,13 +105,14 @@ const Header = () => {
                   Home
                 </Button>
 
-                {isLoggedIn ? (
+                {session ? (
                   <>
                     {/* Notification */}
                     <Button
                       variant="ghost"
                       size="lg"
                       className="w-full justify-center"
+                      render={<Link to="/notifications" />}
                     >
                       <Bell className="size-4" />
                       Notification
@@ -114,6 +123,11 @@ const Header = () => {
                       variant="ghost"
                       size="lg"
                       className="w-full justify-center"
+                      render={
+                        <Link
+                          to={`/profile/${getUsernameFromEmail(session.user.email)}`}
+                        />
+                      }
                     >
                       <User className="size-4" />
                       Profile
