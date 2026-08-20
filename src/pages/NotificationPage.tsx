@@ -8,7 +8,8 @@ import { useNotifications } from "@/hooks/use-notifications";
 import { LucideLoader2 } from "lucide-react";
 
 export const NotificationPage = () => {
-  const { data, isLoading } = useNotifications();
+  
+  const { data, isLoading, isFetching } = useNotifications();
   const { mutate: markAsRead, isPending } = useMarkAsRead();
 
   const notifications = data?.data || [];
@@ -20,6 +21,9 @@ export const NotificationPage = () => {
       markAsRead(unreadIds);
     }
   };
+
+  
+  const showSkeleton = isLoading || isPending || isFetching;
 
   return (
     <Card className="w-full flex flex-col">
@@ -47,7 +51,7 @@ export const NotificationPage = () => {
 
       <CardContent className="p-0">
         <ScrollArea className="h-96 px-6">
-          {isLoading ? (
+          {showSkeleton ? (
             <div className="space-y-3 py-2">
               {[...Array(4)].map((_, i) => (
                 <div
