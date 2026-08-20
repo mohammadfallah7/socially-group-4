@@ -2,6 +2,7 @@ import NotificationCard from "@/components/notifications/NotificationCard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useMarkAsRead } from "@/hooks/use-mark-as-read";
 import { useNotifications } from "@/hooks/use-notifications";
 import { LucideLoader2 } from "lucide-react";
@@ -35,7 +36,9 @@ export const NotificationPage = () => {
               onClick={handleMarkAllAsRead}
               className="h-auto p-0 text-sm text-muted-foreground hover:text-foreground hover:bg-transparent cursor-pointer"
             >
-              {isPending && <LucideLoader2 className="size-4 animate-spin" />}
+              {isPending && (
+                <LucideLoader2 className="size-4 animate-spin mr-1" />
+              )}
               Mark as read
             </Button>
           )}
@@ -45,8 +48,19 @@ export const NotificationPage = () => {
       <CardContent className="p-0">
         <ScrollArea className="h-96 px-6">
           {isLoading ? (
-            <div className="flex justify-center items-center h-40">
-              <LucideLoader2 className="size-6 animate-spin text-muted-foreground" />
+            <div className="space-y-3 py-2">
+              {[...Array(4)].map((_, i) => (
+                <div
+                  key={i}
+                  className="flex items-start gap-3 p-3.5 rounded-xl"
+                >
+                  <Skeleton className="size-8 rounded-full shrink-0" />
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="h-4 w-3/4" />
+                    <Skeleton className="h-3 w-1/2" />
+                  </div>
+                </div>
+              ))}
             </div>
           ) : notifications.length === 0 ? (
             <div className="text-center py-12 text-sm text-muted-foreground">
@@ -55,7 +69,7 @@ export const NotificationPage = () => {
           ) : (
             <div className="space-y-3 pb-6">
               {notifications.map((item) => (
-                <div key={item.id} className="cursor-pointer">
+                <div key={item.id}>
                   <NotificationCard notification={item} />
                 </div>
               ))}
@@ -68,4 +82,3 @@ export const NotificationPage = () => {
 };
 
 export default NotificationPage;
-// end
