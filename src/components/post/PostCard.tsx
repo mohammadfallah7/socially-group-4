@@ -8,9 +8,10 @@ import { Card, CardContent } from "../ui/card";
 
 type PostCardProps = {
   post: Post;
+  isLiked?: boolean;
 };
 
-const PostCard = ({ post }: PostCardProps) => {
+const PostCard = ({ post, isLiked }: PostCardProps) => {
   const [addComment, setAddComment] = useState(false);
 
   return (
@@ -27,6 +28,7 @@ const PostCard = ({ post }: PostCardProps) => {
           <div className="flex items-center gap-4">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
               <h2 className="text-lg font-medium">{post.author.name}</h2>
+
               <span className="text-muted-foreground">
                 @{getUsernameFromEmail(post.author.email)}
               </span>
@@ -46,7 +48,7 @@ const PostCard = ({ post }: PostCardProps) => {
         {/* Actions */}
         <div className="flex gap-6 text-muted-foreground">
           <Button variant="ghost" className="cursor-pointer">
-            <Heart />
+            <Heart className={isLiked ? "fill-red-500 text-red-500" : ""} />
             {post._count.likes}
           </Button>
 
@@ -62,7 +64,7 @@ const PostCard = ({ post }: PostCardProps) => {
 
         {/* Comments */}
         {addComment && (
-          <div className="border-t pt-5 flex flex-col gap-5">
+          <div className="flex flex-col gap-5 border-t pt-5">
             {post.comments.map((comment) => (
               <div key={comment.id} className="flex flex-col gap-3">
                 <div className="flex items-center gap-3">

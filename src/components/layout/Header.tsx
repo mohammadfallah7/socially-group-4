@@ -1,7 +1,10 @@
 import { getUsernameFromEmail } from "@/lib/utils";
+import { axiosInstance } from "@/lib/axios";
 import { useSessionStore } from "@/stores/session.store";
+import type { Response } from "@/types/response.type";
+import { useMutation } from "@tanstack/react-query";
 import { Bell, Home, LogOut, Menu, User } from "lucide-react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { ModeToggle } from "../ModeToggle";
 import { Button } from "../ui/button";
 import {
@@ -14,12 +17,34 @@ import {
 import Container from "./Container";
 
 const Header = () => {
-  const { session } = useSessionStore();
+  const { session, isLoading, setSession } = useSessionStore();
+  const navigate = useNavigate();
 
-  const handleLogout = () => {};
+  const { mutate: logout, isPending } = useMutation({
+    mutationFn: async () => {
+      const response = await axiosInstance.post<Response<null>>(
+        "/api/authentication/logout",
+      );
+
+      return response.data;
+    },
+
+    onSuccess: () => {
+      setSession(null);
+      navigate("/");
+    },
+  });
+
+  const handleLogout = () => {
+    logout();
+  };
+
+  if (isLoading) {
+    return null;
+  }
 
   return (
-    <header className="border-b py-5 sticky top-0 z-50 bg-background/80 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 border-b bg-background/80 py-5 backdrop-blur-xl">
       <Container className="flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="font-mono text-xl font-bold">
@@ -28,7 +53,6 @@ const Header = () => {
 
         {/* Desktop Navigation */}
         <nav className="hidden items-center gap-3 md:flex">
-          {/* Theme */}
           <ModeToggle />
 
           {/* Home */}
@@ -64,12 +88,17 @@ const Header = () => {
               </Button>
 
               {/* Logout */}
-              <Button variant="ghost" size="lg" onClick={handleLogout}>
+              <Button
+                variant="ghost"
+                size="lg"
+                onClick={handleLogout}
+                disabled={isPending}
+              >
                 <LogOut className="size-4" />
               </Button>
             </>
           ) : (
-            <Button size="lg" render={<Link to="/sign-in" />}>
+            <Button render={<Link to="/sign-in" />} size="lg">
               Sign in
             </Button>
           )}
@@ -77,10 +106,8 @@ const Header = () => {
 
         {/* Mobile Navigation */}
         <div className="flex items-center gap-2 md:hidden">
-          {/* Theme */}
           <ModeToggle />
 
-          {/* Mobile Menu */}
           <Sheet>
             <SheetTrigger>
               <Button size="icon">
@@ -109,10 +136,10 @@ const Header = () => {
                   <>
                     {/* Notification */}
                     <Button
+                      render={<Link to="/notifications" />}
                       variant="ghost"
                       size="lg"
                       className="w-full justify-center"
-                      render={<Link to="/notifications" />}
                     >
                       <Bell className="size-4" />
                       Notification
@@ -120,14 +147,16 @@ const Header = () => {
 
                     {/* Profile */}
                     <Button
+                      render={
+                        <Link
+                          to={`/profile/${getUsernameFromEmail(
+                            session.user.email,
+                          )}`}
+                        />
+                      }
                       variant="ghost"
                       size="lg"
                       className="w-full justify-center"
-                      render={
-                        <Link
-                          to={`/profile/${getUsernameFromEmail(session.user.email)}`}
-                        />
-                      }
                     >
                       <User className="size-4" />
                       Profile
@@ -139,8 +168,10 @@ const Header = () => {
                       size="lg"
                       className="w-full justify-center"
                       onClick={handleLogout}
+                      disabled={isPending}
                     >
                       <LogOut className="size-4" />
+                      Logout
                     </Button>
                   </>
                 ) : (
