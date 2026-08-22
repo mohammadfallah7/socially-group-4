@@ -1,12 +1,22 @@
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { EditProfileModal } from "@/components/profile/EditProfileModal";
 import { Button } from "@/components/ui/button";
-import { LucideLink, LucideMapPin } from "lucide-react";
-import { useParams } from "react-router";
-import { LucideCalendar } from "lucide-react";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { LucideCalendar, LucideLink, LucideMapPin } from "lucide-react";
 import { useState } from "react";
+// اصلاح ایمپورت از react-router-dom
+import { useParams } from "react-router";
+
 const ProfilePage = () => {
   const { username } = useParams();
   const [activeTab, setActiveTab] = useState<"posts" | "likes">("posts");
+
+  const user = {
+    id: "XMau3HSiyiA96jtJv7hZQcl4eRPqvx02",
+    name: "Mohammad Fallah",
+    bio: "",
+    location: "",
+    website: "",
+  };
 
   return (
     <div className="space-y-6">
@@ -19,7 +29,7 @@ const ProfilePage = () => {
           />
 
           <div className="flex flex-col items-center gap-1.5 text-center">
-            <h1 className="text-xl font-semibold">Mohammad Fallah</h1>
+            <h1 className="text-xl font-semibold">{user.name}</h1>
             <p className="text-sm text-muted-foreground">{username}</p>
           </div>
 
@@ -44,17 +54,17 @@ const ProfilePage = () => {
             </div>
           </div>
 
-          <Button className="w-full">Edit Profile</Button>
+          <EditProfileModal user={user} />
 
           <div className="flex flex-col gap-3">
             <div className="flex items-center gap-1.5 text-muted-foreground">
               <LucideMapPin className="size-4" />
-              <p className="text-sm">No Location</p>
+              <p className="text-sm">{user.location || "No Location"}</p>
             </div>
 
             <div className="flex items-center gap-1.5 text-muted-foreground">
               <LucideLink className="size-4" />
-              <p className="text-sm">No Website</p>
+              <p className="text-sm">{user.website || "No Website"}</p>
             </div>
             <div className="flex items-center gap-1.5 text-muted-foreground">
               <LucideCalendar className="size-4" />
