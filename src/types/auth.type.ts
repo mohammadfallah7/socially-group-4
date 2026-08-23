@@ -43,6 +43,7 @@ export interface ProfilePageValues {
   website: string | null;
   createdAt: string;
   updatedAt: string;
+  followers: { followerId: string }[];
   _count: {
     followers: number;
     followings: number;

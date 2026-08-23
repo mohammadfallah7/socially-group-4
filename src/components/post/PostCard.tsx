@@ -9,12 +9,13 @@ import { Card, CardContent } from "../ui/card";
 
 type PostCardProps = {
   post: Post;
-  isLiked?: boolean;
 };
 
-const PostCard = ({ post, isLiked }: PostCardProps) => {
+const PostCard = ({ post }: PostCardProps) => {
   const [addComment, setAddComment] = useState(false);
   const { session } = useSessionStore();
+
+  const isLiked = post.likes.some((l) => l.userId === session?.user.id);
 
   return (
     <Card className="shadow-md shadow-muted">

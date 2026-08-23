@@ -1,10 +1,8 @@
+import { useLogout } from "@/hooks/use-logout";
 import { getUsernameFromEmail } from "@/lib/utils";
-import { axiosInstance } from "@/lib/axios";
 import { useSessionStore } from "@/stores/session.store";
-import type { Response } from "@/types/response.type";
-import { useMutation } from "@tanstack/react-query";
 import { Bell, Home, LogOut, Menu, User } from "lucide-react";
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 import { ModeToggle } from "../ModeToggle";
 import { Button } from "../ui/button";
 import {
@@ -17,31 +15,13 @@ import {
 import Container from "./Container";
 
 const Header = () => {
-  const { session, isLoading, setSession } = useSessionStore();
-  const navigate = useNavigate();
+  const { session } = useSessionStore();
 
-  const { mutate: logout, isPending } = useMutation({
-    mutationFn: async () => {
-      const response = await axiosInstance.post<Response<null>>(
-        "/api/authentication/logout",
-      );
-
-      return response.data;
-    },
-
-    onSuccess: () => {
-      setSession(null);
-      navigate("/");
-    },
-  });
+  const { mutate: logout, isPending } = useLogout();
 
   const handleLogout = () => {
     logout();
   };
-
-  if (isLoading) {
-    return null;
-  }
 
   return (
     <header className="sticky top-0 z-50 border-b bg-background/80 py-5 backdrop-blur-xl">

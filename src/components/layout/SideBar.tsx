@@ -15,6 +15,7 @@ import { getUsernameFromEmail } from "@/lib/utils";
 import { axiosInstance } from "@/lib/axios";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
+import type { Response } from "@/types/response.type";
 
 const SignInSidebarSkeleton = () => {
   return (
@@ -76,12 +77,9 @@ const SignInSidebar = ({ session }: { session: Session }) => {
     queryKey: ["sidebar-profile", username],
 
     queryFn: async () => {
-      const response = await axiosInstance.get<{
-        message: string;
-        success: boolean;
-        data: ProfilePageValues;
-      }>(`/api/users/${username}/profile`);
-
+      const response = await axiosInstance.get<Response<ProfilePageValues>>(
+        `/api/users/${username}/profile`,
+      );
       return response.data.data;
     },
 
@@ -111,13 +109,13 @@ const SignInSidebar = ({ session }: { session: Session }) => {
 
           <div className="flex flex-col items-center gap-1.5 text-center">
             <h2 className="text-lg font-semibold">{profile.name}</h2>
-
-            <p className="text-sm text-gray-500">{username}</p>
+            <p className="text-sm text-muted-foreground">{username}</p>
           </div>
-
-          <p className="text-center text-sm text-gray-500">
-            {profile.bio || "No Bio"}
-          </p>
+          {profile.bio && (
+            <p className="text-center text-sm text-muted-foreground">
+              {profile.bio}
+            </p>
+          )}
         </Link>
       </CardHeader>
 
@@ -130,13 +128,13 @@ const SignInSidebar = ({ session }: { session: Session }) => {
             <div className="flex flex-col items-center">
               <h3 className="font-semibold">{profile._count.followings}</h3>
 
-              <p className="text-sm text-gray-500">Followings</p>
+              <p className="text-sm text-muted-foreground">Followings</p>
             </div>
 
             <div className="flex flex-col items-center">
               <h3 className="font-semibold">{profile._count.followers}</h3>
 
-              <p className="text-sm text-gray-500">Followers</p>
+              <p className="text-sm text-muted-foreground">Followers</p>
             </div>
           </div>
 
@@ -145,13 +143,13 @@ const SignInSidebar = ({ session }: { session: Session }) => {
 
         {/* Details */}
         <div className="flex flex-col gap-3">
-          <div className="flex items-center gap-1.5 text-gray-500">
+          <div className="flex items-center gap-1.5 text-muted-foreground">
             <LucideMapPin className="size-4" />
 
             <p className="text-sm">{profile.location || "No Location"}</p>
           </div>
 
-          <div className="flex items-center gap-1.5 text-gray-500">
+          <div className="flex items-center gap-1.5 text-muted-foreground">
             <LucideLink className="size-4" />
 
             <p className="text-sm">{profile.website || "No Website"}</p>
