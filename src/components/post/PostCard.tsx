@@ -5,6 +5,8 @@ import { Heart, MessageCircle, Send } from "lucide-react";
 import { useState } from "react";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { axiosInstance } from "@/lib/axios";
 
 type PostCardProps = {
   post: Post;
@@ -12,7 +14,29 @@ type PostCardProps = {
 
 const PostCard = ({ post }: PostCardProps) => {
   const [addComment, setAddComment] = useState(false);
+  const [comment, setComment] = useState("");
+  const queryClient = useQueryClient();
 
+  const commentMutation = useMutation({
+    mutationFn: async () => {
+      const response = await axiosInstance.post(
+        `/api/posts/${post.id}/comment`,
+        {
+          content: comment,
+        },
+      );
+
+      return response.data;
+    },
+
+    onSuccess: () => {
+      setComment("");
+
+      queryClient.invalidateQueries({
+        queryKey: ["posts"],
+      });
+    },
+  });
   return (
     <Card className="shadow-md shadow-muted">
       <CardContent className="flex flex-col gap-5">
@@ -100,15 +124,21 @@ const PostCard = ({ post }: PostCardProps) => {
               />
 
               <textarea
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
                 placeholder="Write a comment..."
                 className="min-h-[65px] flex-1 resize-none rounded-lg border p-3 text-sm outline-none focus:border-gray-400"
               />
             </div>
 
             <div className="flex justify-end">
-              <Button className="cursor-pointer bg-black text-white hover:bg-black/90">
+              <Button
+                className="cursor-pointer bg-black text-white hover:bg-black/90"
+                onClick={() => commentMutation.mutate()}
+                disabled={!comment.trim() || commentMutation.isPending}
+              >
                 <Send />
-                Comment
+                {commentMutation.isPending ? "Sending..." : "Comment"}
               </Button>
             </div>
           </div>
