@@ -74,16 +74,13 @@ const SignInSidebar = ({ session }: { session: Session }) => {
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ["sidebar-profile", username],
-
+    queryKey: ["sidebar-profile"],
     queryFn: async () => {
       const response = await axiosInstance.get<Response<ProfilePageValues>>(
         `/api/users/${username}/profile`,
       );
       return response.data.data;
     },
-
-    enabled: !!username,
   });
 
   if (isLoading) {

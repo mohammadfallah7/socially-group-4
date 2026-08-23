@@ -1,12 +1,12 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useRecommendedUsers } from "@/hooks/use-recommended-users";
+import { useToggleFollow } from "@/hooks/use-toggle-follow";
+import { getUsernameFromEmail } from "@/lib/utils";
+import { Loader2 } from "lucide-react";
+import { Link } from "react-router";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
-import { axiosInstance } from "@/lib/axios";
-import type { Response } from "@/types/response.type";
-import type { RecommendedUser } from "@/types/user.type";
 import { Skeleton } from "../ui/skeleton";
-import { useState } from "react";
-import { Loader2 } from "lucide-react";
+
 const RecommendedUserSkeleton = () => {
   return (
     <div className="flex items-center justify-between">
@@ -25,52 +25,8 @@ const RecommendedUserSkeleton = () => {
 };
 
 const RecommendedUsers = () => {
-  const { data, isPending, isError } = useQuery({
-    queryKey: ["recommended-users"],
-    queryFn: async () => {
-      const response = await axiosInstance.get<Response<RecommendedUser[]>>(
-        "/api/users/recommend",
-      );
-
-      return response.data;
-    },
-  });
-
-  const queryClient = useQueryClient();
-
-  const [followingUserId, setFollowingUserId] = useState<string | null>(null);
-  const followMutation = useMutation({
-    mutationFn: async (userId: string) => {
-      const response = await axiosInstance.patch(`/api/users/${userId}`);
-
-      return response.data;
-    },
-
-    onMutate: (userId) => {
-      setFollowingUserId(userId);
-    },
-
-    onSuccess: (_, userId) => {
-      queryClient.setQueryData(
-        ["recommended-users"],
-        (oldData: Response<RecommendedUser[]> | undefined) => {
-          if (!oldData) return oldData;
-
-          return {
-            ...oldData,
-            data: oldData.data.filter((user) => user.id !== userId),
-          };
-        },
-      );
-
-      setFollowingUserId(null);
-    },
-
-
-  });
-  if (isError) {
-    return null;
-  }
+  const { data, isLoading } = useRecommendedUsers();
+  const { mutate, isPending } = useToggleFollow();
 
   return (
     <Card className="shadow-muted shadow-md hidden lg:block lg:col-span-4 sticky top-24">
@@ -78,14 +34,17 @@ const RecommendedUsers = () => {
         <h2 className="mb-7 font-semibold text-lg">Recommended users</h2>
 
         <div className="flex flex-col gap-5">
-          {isPending
+          {isLoading
             ? [1, 2, 3].map((_, i) => <RecommendedUserSkeleton key={i} />)
-            : data.data.map((user) => (
+            : data?.data.map((user) => (
                 <div
                   key={user.id}
                   className="flex items-center justify-between"
                 >
-                  <div className="flex items-center gap-3">
+                  <Link
+                    to={`/profile/${getUsernameFromEmail(user.email)}`}
+                    className="flex items-center gap-3"
+                  >
                     <img
                       src={user.image || "/user_profile.svg"}
                       alt="Avatar"
@@ -99,14 +58,13 @@ const RecommendedUsers = () => {
                         {user._count.followers} followers
                       </p>
                     </div>
-                  </div>
+                  </Link>
                   <Button
                     variant="outline"
                     className="cursor-pointer"
-                    onClick={() => followMutation.mutate(user.id)}
-                    disabled={followingUserId === user.id}
+                    onClick={() => mutate(user.id)}
                   >
-                    {followingUserId === user.id ? (
+                    {isPending ? (
                       <Loader2 className="size-4 animate-spin" />
                     ) : (
                       "Follow"

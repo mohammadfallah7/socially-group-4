@@ -1,4 +1,4 @@
-import { getUsernameFromEmail } from "@/lib/utils";
+import { cn, getUsernameFromEmail } from "@/lib/utils";
 import { useSessionStore } from "@/stores/session.store";
 import type { Post } from "@/types/post.type";
 import { formatDistanceToNow } from "date-fns";
@@ -56,17 +56,28 @@ const PostCard = ({ post }: PostCardProps) => {
 
         {/* Actions */}
         <div className="flex gap-6 text-muted-foreground">
-          <Button variant="ghost" className="cursor-pointer">
-            <Heart className={isLiked ? "fill-red-500 text-red-500" : ""} />
+          <Button
+            variant="ghost"
+            className={cn(
+              "cursor-pointer",
+              isLiked && "text-red-500 hover:text-red-500",
+            )}
+          >
+            <Heart className={cn(isLiked && "fill-red-500 text-red-500")} />
             {post._count.likes}
           </Button>
 
           <Button
             variant="ghost"
-            className="cursor-pointer"
+            className={cn(
+              "cursor-pointer",
+              addComment && "text-blue-500 hover:text-blue-500",
+            )}
             onClick={() => setAddComment((prev) => !prev)}
           >
-            <MessageCircle />
+            <MessageCircle
+              className={cn(addComment && "fill-blue-500 text-blue-500")}
+            />
             {post._count.comments}
           </Button>
         </div>
