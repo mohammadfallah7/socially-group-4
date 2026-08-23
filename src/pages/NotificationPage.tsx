@@ -2,35 +2,23 @@ import NotificationCard from "@/components/notifications/NotificationCard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { toast } from "@/components/ui/toast";
+import { useMarkAsRead } from "@/hooks/use-mark-as-read";
 import { useNotifications } from "@/hooks/use-notifications";
 import { LucideLoader2 } from "lucide-react";
-import { useEffect } from "react";
 
-export const Notifications = () => {
-  const { data, isLoading, isError, error } = useNotifications();
-
-  useEffect(() => {
-    if (isError && error) {
-      if (error.response?.status === 401) {
-        toast.add({
-          type: "error",
-          description: "Please login first to view notifications",
-        });
-      } else {
-        toast.add({
-          type: "error",
-          description:
-            error.response?.data?.error || "Failed to load notifications",
-        });
-      }
-    }
-  }, [isError, error]);
+export const NotificationPage = () => {
+  const { data, isLoading } = useNotifications();
+  const { mutate: markAsRead, isPending } = useMarkAsRead();
 
   const notifications = data?.data || [];
   const unreadCount = notifications.filter((n) => !n.read).length;
 
-  const handleMarkAllAsRead = () => {};
+  const handleMarkAllAsRead = () => {
+    const unreadIds = notifications.filter((n) => !n.read).map((n) => n.id);
+    if (unreadIds.length > 0) {
+      markAsRead(unreadIds);
+    }
+  };
 
   return (
     <Card className="w-full flex flex-col">
@@ -42,10 +30,12 @@ export const Notifications = () => {
           {unreadCount > 0 && (
             <Button
               variant="ghost"
+              disabled={isPending}
               size="sm"
               onClick={handleMarkAllAsRead}
               className="h-auto p-0 text-sm text-muted-foreground hover:text-foreground hover:bg-transparent cursor-pointer"
             >
+              {isPending && <LucideLoader2 className="size-4 animate-spin" />}
               Mark as read
             </Button>
           )}
@@ -58,19 +48,16 @@ export const Notifications = () => {
             <div className="flex justify-center items-center h-40">
               <LucideLoader2 className="size-6 animate-spin text-muted-foreground" />
             </div>
-          ) : isError ? (
-            <div className="text-center py-10 text-sm text-muted-foreground">
-              {error.response?.status === 401
-                ? "Please login to view notifications."
-                : "Failed to load notifications."}
+          ) : notifications.length === 0 ? (
+            <div className="text-center py-12 text-sm text-muted-foreground">
+              You have no notifications
             </div>
           ) : (
             <div className="space-y-3 pb-6">
-              {notifications.map((notification) => (
-                <NotificationCard
-                  key={notification.id}
-                  notification={notification}
-                />
+              {notifications.map((item) => (
+                <div key={item.id} className="cursor-pointer">
+                  <NotificationCard notification={item} />
+                </div>
               ))}
             </div>
           )}
@@ -80,4 +67,5 @@ export const Notifications = () => {
   );
 };
 
-export default Notifications;
+export default NotificationPage;
+// end

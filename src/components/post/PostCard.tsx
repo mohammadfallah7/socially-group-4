@@ -1,10 +1,11 @@
-import { useState } from "react";
-import { Heart, MessageCircle, Send } from "lucide-react";
-import { Button } from "../ui/button";
-import { Card, CardContent } from "../ui/card";
+import { getUsernameFromEmail } from "@/lib/utils";
 import type { Post } from "@/types/post.type";
 import { formatDistanceToNow } from "date-fns";
-import { getUsernameFromEmail } from "@/lib/utils";
+import { Heart, MessageCircle, Send } from "lucide-react";
+import { useState } from "react";
+import { Button } from "../ui/button";
+import { Card, CardContent } from "../ui/card";
+
 type PostCardProps = {
   post: Post;
 };
@@ -26,7 +27,9 @@ const PostCard = ({ post }: PostCardProps) => {
           <div className="flex items-center gap-4">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
               <h2 className="text-lg font-medium">{post.author.name}</h2>
-              <span className="text-muted-foreground">@{getUsernameFromEmail(post.author.email)}</span>
+              <span className="text-muted-foreground">
+                @{getUsernameFromEmail(post.author.email)}
+              </span>
             </div>
 
             <span className="text-muted-foreground">
@@ -78,8 +81,8 @@ const PostCard = ({ post }: PostCardProps) => {
 
                     <span className="text-sm text-muted-foreground">
                       {formatDistanceToNow(new Date(comment.createdAt), {
-                addSuffix: true,
-              })}
+                        addSuffix: true,
+                      })}
                     </span>
                   </div>
                 </div>

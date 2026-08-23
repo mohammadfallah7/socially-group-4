@@ -1,5 +1,8 @@
-import { Bell, Home, LogOut, Menu, Moon, Sun, User } from "lucide-react";
+import { getUsernameFromEmail } from "@/lib/utils";
+import { useSessionStore } from "@/stores/session.store";
+import { Bell, Home, LogOut, Menu, User } from "lucide-react";
 import { Link } from "react-router";
+import { ModeToggle } from "../ModeToggle";
 import { Button } from "../ui/button";
 import {
   Sheet,
@@ -11,7 +14,9 @@ import {
 import Container from "./Container";
 
 const Header = () => {
-  const isLoggedIn = true;
+  const { session } = useSessionStore();
+
+  const handleLogout = () => {};
 
   return (
     <header className="border-b py-5 sticky top-0 z-50 bg-background/80 backdrop-blur-xl">
@@ -24,10 +29,7 @@ const Header = () => {
         {/* Desktop Navigation */}
         <nav className="hidden items-center gap-3 md:flex">
           {/* Theme */}
-          <Button variant="outline" size="icon" onClick={() => {}}>
-            <Moon className="hidden size-4 dark:block" />
-            <Sun className="size-4 dark:hidden" />
-          </Button>
+          <ModeToggle />
 
           {/* Home */}
           <Button render={<Link to="/" />} variant="ghost" size="lg">
@@ -35,7 +37,7 @@ const Header = () => {
             Home
           </Button>
 
-          {isLoggedIn ? (
+          {session ? (
             <>
               {/* Notification */}
               <Button
@@ -48,28 +50,35 @@ const Header = () => {
               </Button>
 
               {/* Profile */}
-              <Button render={<Link to="/profile" />} variant="ghost" size="lg">
+              <Button
+                render={
+                  <Link
+                    to={`/profile/${getUsernameFromEmail(session.user.email)}`}
+                  />
+                }
+                variant="ghost"
+                size="lg"
+              >
                 <User className="size-4" />
                 Profile
               </Button>
 
               {/* Logout */}
-              <Button variant="ghost" size="lg">
+              <Button variant="ghost" size="lg" onClick={handleLogout}>
                 <LogOut className="size-4" />
               </Button>
             </>
           ) : (
-            <Button size="lg">Sign in</Button>
+            <Button size="lg" render={<Link to="/sign-in" />}>
+              Sign in
+            </Button>
           )}
         </nav>
 
         {/* Mobile Navigation */}
         <div className="flex items-center gap-2 md:hidden">
           {/* Theme */}
-          <Button variant="outline" size="icon" onClick={() => {}}>
-            <Moon className="hidden size-4 dark:block" />
-            <Sun className="size-4 dark:hidden" />
-          </Button>
+          <ModeToggle />
 
           {/* Mobile Menu */}
           <Sheet>
@@ -87,6 +96,7 @@ const Header = () => {
               <nav className="mt-5 flex flex-col gap-3 px-4">
                 {/* Home */}
                 <Button
+                  render={<Link to="/" />}
                   variant="ghost"
                   size="lg"
                   className="w-full justify-center"
@@ -95,13 +105,14 @@ const Header = () => {
                   Home
                 </Button>
 
-                {isLoggedIn ? (
+                {session ? (
                   <>
                     {/* Notification */}
                     <Button
                       variant="ghost"
                       size="lg"
                       className="w-full justify-center"
+                      render={<Link to="/notifications" />}
                     >
                       <Bell className="size-4" />
                       Notification
@@ -112,6 +123,11 @@ const Header = () => {
                       variant="ghost"
                       size="lg"
                       className="w-full justify-center"
+                      render={
+                        <Link
+                          to={`/profile/${getUsernameFromEmail(session.user.email)}`}
+                        />
+                      }
                     >
                       <User className="size-4" />
                       Profile
@@ -122,12 +138,17 @@ const Header = () => {
                       variant="ghost"
                       size="lg"
                       className="w-full justify-center"
+                      onClick={handleLogout}
                     >
                       <LogOut className="size-4" />
                     </Button>
                   </>
                 ) : (
-                  <Button size="lg" className="w-full">
+                  <Button
+                    render={<Link to="/sign-in" />}
+                    size="lg"
+                    className="w-full"
+                  >
                     Sign in
                   </Button>
                 )}
