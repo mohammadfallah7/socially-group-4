@@ -1,7 +1,8 @@
 import { getUsernameFromEmail } from "@/lib/utils";
+import { useSessionStore } from "@/stores/session.store";
 import type { Post } from "@/types/post.type";
 import { formatDistanceToNow } from "date-fns";
-import { Heart, MessageCircle, Send } from "lucide-react";
+import { Heart, LucideTrash2, MessageCircle, Send } from "lucide-react";
 import { useState } from "react";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
@@ -13,33 +14,40 @@ type PostCardProps = {
 
 const PostCard = ({ post, isLiked }: PostCardProps) => {
   const [addComment, setAddComment] = useState(false);
+  const { session } = useSessionStore();
 
   return (
     <Card className="shadow-md shadow-muted">
       <CardContent className="flex flex-col gap-5">
         {/* Post Header */}
-        <div className="flex items-center gap-3">
-          <img
-            src="/user_profile.svg"
-            alt="Avatar"
-            className="size-8 rounded-full object-cover"
-          />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <img
+              src="/user_profile.svg"
+              alt="Avatar"
+              className="size-8 rounded-full object-cover"
+            />
 
-          <div className="flex items-center gap-4">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
-              <h2 className="text-lg font-medium">{post.author.name}</h2>
+            <div className="flex items-center gap-4">
+              <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
+                <h2 className="text-lg font-medium">{post.author.name}</h2>
+                <span className="text-muted-foreground">
+                  @{getUsernameFromEmail(post.author.email)}
+                </span>
+              </div>
 
               <span className="text-muted-foreground">
-                @{getUsernameFromEmail(post.author.email)}
+                {formatDistanceToNow(new Date(post.createdAt), {
+                  addSuffix: true,
+                })}
               </span>
             </div>
-
-            <span className="text-muted-foreground">
-              {formatDistanceToNow(new Date(post.createdAt), {
-                addSuffix: true,
-              })}
-            </span>
           </div>
+          {session?.user.id === post.authorId && (
+            <Button variant="ghost">
+              <LucideTrash2 />
+            </Button>
+          )}
         </div>
 
         {/* Post */}
