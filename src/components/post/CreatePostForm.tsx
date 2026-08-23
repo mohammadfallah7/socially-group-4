@@ -9,11 +9,9 @@ import { useState } from "react";
 export const CreatePostForm = () => {
   const [content, setContent] = useState("");
   const { mutate: createPost, isPending } = useCreatePost();
-  
-  
+
   const { session } = useSessionStore();
 
-  
   if (!session) {
     return null;
   }
@@ -30,19 +28,8 @@ export const CreatePostForm = () => {
     }
 
     createPost(content, {
-      onSuccess: (data) => {
+      onSuccess: () => {
         setContent("");
-        toast.add({
-          type: "success",
-          description: data.message || "Post created successfully",
-        });
-      },
-      onError: (error: any) => {
-        toast.add({
-          type: "error",
-          description:
-            error.response?.data?.error || "Failed to create post",
-        });
       },
     });
   };
@@ -69,7 +56,11 @@ export const CreatePostForm = () => {
           <div className="w-full h-px bg-gray-300/50" />
 
           <div className="flex justify-end">
-            <Button type="submit" disabled={isPending || !content.trim()}>
+            <Button
+              type="submit"
+              disabled={isPending || !content.trim()}
+              className="cursor-pointer"
+            >
               {isPending ? (
                 <LucideLoader2 className="size-4 animate-spin mr-1" />
               ) : (
