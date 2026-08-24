@@ -2,10 +2,18 @@ import { cn, getUsernameFromEmail } from "@/lib/utils";
 import { useSessionStore } from "@/stores/session.store";
 import type { Post } from "@/types/post.type";
 import { formatDistanceToNow } from "date-fns";
-import { Heart, LucideTrash2, MessageCircle, Send } from "lucide-react";
+import {
+  Heart,
+  LucideTrash2,
+  MessageCircle,
+  Send,
+  Loader2,
+} from "lucide-react";
 import { useState } from "react";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
+import { useToggleLike } from "@/hooks/use-toggle-like";
+import { toast } from "@/components/ui/toast";
 
 type PostCardProps = {
   post: Post;
@@ -13,9 +21,34 @@ type PostCardProps = {
 
 const PostCard = ({ post }: PostCardProps) => {
   const [addComment, setAddComment] = useState(false);
+  const { mutate: toggleLike, isPending: isLikeLoading } = useToggleLike();
+
   const { session } = useSessionStore();
 
-  const isLiked = post.likes.some((l) => l.userId === session?.user.id);
+  const isLiked = post.likes.some((like) => like.userId === session?.user.id);
+
+  const [isOwnPostLoading, setIsOwnPostLoading] = useState(false);
+
+  const isLikeButtonLoading = isLikeLoading || isOwnPostLoading;
+
+  const handleLike = () => {
+    if (session?.user.id === post.authorId) {
+      toast.add({
+        type: "error",
+        description: "You can't like or dislike your post",
+      });
+
+      setIsOwnPostLoading(true);
+
+      setTimeout(() => {
+        setIsOwnPostLoading(false);
+      }, 500);
+
+      return;
+    }
+
+    toggleLike(post.id);
+  };
 
   return (
     <Card className="shadow-md shadow-muted">
@@ -61,9 +94,17 @@ const PostCard = ({ post }: PostCardProps) => {
             className={cn(
               "cursor-pointer",
               isLiked && "text-red-500 hover:text-red-500",
+              isLikeButtonLoading && "opacity-50",
             )}
+            disabled={isLikeButtonLoading}
+            onClick={handleLike}
           >
-            <Heart className={cn(isLiked && "fill-red-500 text-red-500")} />
+            {isLikeButtonLoading ? (
+              <Loader2 className="animate-spin" />
+            ) : (
+              <Heart className={cn(isLiked && "fill-red-500")} />
+            )}
+
             {post._count.likes}
           </Button>
 
