@@ -1,7 +1,7 @@
 import { getUsernameFromEmail } from "@/lib/utils";
 import type { Post } from "@/types/post.type";
 import { formatDistanceToNow } from "date-fns";
-import { Heart, MessageCircle, Send } from "lucide-react";
+import { Heart, MessageCircle, Send, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
@@ -15,6 +15,8 @@ type PostCardProps = {
 const PostCard = ({ post }: PostCardProps) => {
   const [addComment, setAddComment] = useState(false);
   const [comment, setComment] = useState("");
+  const [commentError, setCommentError] = useState(false);
+  const [isCommentLoading, setIsCommentLoading] = useState(false);
   const queryClient = useQueryClient();
 
   const commentMutation = useMutation({
@@ -29,14 +31,35 @@ const PostCard = ({ post }: PostCardProps) => {
       return response.data;
     },
 
-    onSuccess: () => {
+    onSuccess: async () => {
       setComment("");
+      setCommentError(false);
 
-      queryClient.invalidateQueries({
+      await queryClient.invalidateQueries({
         queryKey: ["posts"],
       });
+
+      setIsCommentLoading(false);
     },
   });
+
+  const handleComment = () => {
+    setIsCommentLoading(true);
+
+    if (comment.trim().length < 5) {
+      setCommentError(true);
+
+      setTimeout(() => {
+        setIsCommentLoading(false);
+      }, 500);
+
+      return;
+    }
+
+    setCommentError(false);
+    commentMutation.mutate();
+  };
+
   return (
     <Card className="shadow-md shadow-muted">
       <CardContent className="flex flex-col gap-5">
@@ -116,29 +139,41 @@ const PostCard = ({ post }: PostCardProps) => {
             ))}
 
             {/* Add Comment */}
-            <div className="flex items-start gap-3 border-t pt-5">
-              <img
-                src="/user_profile.svg"
-                alt="Avatar"
-                className="size-8 rounded-full object-cover"
-              />
+            <div className="flex flex-col gap-2">
+              <div className="flex items-start gap-3">
+                <img
+                  src="/user_profile.svg"
+                  alt="Avatar"
+                  className="size-8 rounded-full object-cover"
+                />
 
-              <textarea
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                placeholder="Write a comment..."
-                className="min-h-[65px] flex-1 resize-none rounded-lg border p-3 text-sm outline-none focus:border-gray-400"
-              />
+                <textarea
+                  value={comment}
+                  onChange={(e) => {
+                    setComment(e.target.value);
+                    setCommentError(false);
+                  }}
+                  placeholder="Write a comment..."
+                  className="min-h-[65px] flex-1 resize-none rounded-lg border p-3 text-sm outline-none focus:border-gray-400"
+                />
+              </div>
+
+              {commentError && (
+                <p className="text-xs text-red-500 px-11 py-2">
+                  Content is too short, minimum 5 characters
+                </p>
+              )}
             </div>
 
             <div className="flex justify-end">
-              <Button
-                className="cursor-pointer bg-black text-white hover:bg-black/90"
-                onClick={() => commentMutation.mutate()}
-                disabled={!comment.trim() || commentMutation.isPending}
-              >
-                <Send />
-                {commentMutation.isPending ? "Sending..." : "Comment"}
+              <Button onClick={handleComment} disabled={isCommentLoading}>
+                {isCommentLoading ? (
+                  <Loader2 className="animate-spin" />
+                ) : (
+                  <Send />
+                )}
+
+                {isCommentLoading ? "Comment" : "Comment"}
               </Button>
             </div>
           </div>
