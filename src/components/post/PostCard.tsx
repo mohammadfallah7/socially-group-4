@@ -1,4 +1,4 @@
-import { getUsernameFromEmail } from "@/lib/utils";
+import { cn, getUsernameFromEmail } from "@/lib/utils";
 import type { Post } from "@/types/post.type";
 import { formatDistanceToNow } from "date-fns";
 import { Heart, MessageCircle, Send, Loader2 } from "lucide-react";
@@ -19,33 +19,32 @@ const PostCard = ({ post }: PostCardProps) => {
   const [isCommentLoading, setIsCommentLoading] = useState(false);
   const { mutate: createComment } = useCreateComment(post.id);
 
+  const handleComment = () => {
+    setIsCommentLoading(true);
 
-const handleComment = () => {
-  setIsCommentLoading(true);
+    if (comment.trim().length < 5) {
+      setCommentError(true);
 
-  if (comment.trim().length < 5) {
-    setCommentError(true);
+      setTimeout(() => {
+        setIsCommentLoading(false);
+      }, 500);
 
-    setTimeout(() => {
-      setIsCommentLoading(false);
-    }, 500);
+      return;
+    }
 
-    return;
-  }
+    setCommentError(false);
 
-  setCommentError(false);
+    createComment(comment, {
+      onSuccess: () => {
+        setComment("");
+        setIsCommentLoading(false);
+      },
 
-  createComment(comment, {
-    onSuccess: () => {
-      setComment("");
-      setIsCommentLoading(false);
-    },
-
-    onError: () => {
-      setIsCommentLoading(false);
-    },
-  });
-};
+      onError: () => {
+        setIsCommentLoading(false);
+      },
+    });
+  };
 
   return (
     <Card className="shadow-md shadow-muted">
@@ -86,10 +85,16 @@ const handleComment = () => {
 
           <Button
             variant="ghost"
-            className="cursor-pointer"
+            className={cn(
+              "cursor-pointer",
+              addComment && "text-blue-500 hover:text-blue-500",
+            )}
             onClick={() => setAddComment((prev) => !prev)}
           >
-            <MessageCircle />
+            <MessageCircle             className={cn(
+              "cursor-pointer",
+              addComment && " fill-blue-500 text-blue-500 hover:text-blue-500",
+            )} />
             {post._count.comments}
           </Button>
         </div>
