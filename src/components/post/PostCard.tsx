@@ -2,10 +2,11 @@ import { cn, getUsernameFromEmail } from "@/lib/utils";
 import { useSessionStore } from "@/stores/session.store";
 import type { Post } from "@/types/post.type";
 import { formatDistanceToNow } from "date-fns";
-import { Heart, LucideTrash2, MessageCircle, Send } from "lucide-react";
+import { Heart, LucideTrash2, MessageCircle, Send, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
+import { useDeletePost } from "@/hooks/use-delete-post";
 
 type PostCardProps = {
   post: Post;
@@ -16,6 +17,10 @@ const PostCard = ({ post }: PostCardProps) => {
   const { session } = useSessionStore();
 
   const isLiked = post.likes.some((l) => l.userId === session?.user.id);
+  const { mutate: deletePost, isPending: isDeletePending } = useDeletePost();
+  const handleDelete = () => {
+    deletePost(post.id);
+  };
 
   return (
     <Card className="shadow-md shadow-muted">
@@ -45,8 +50,16 @@ const PostCard = ({ post }: PostCardProps) => {
             </div>
           </div>
           {session?.user.id === post.authorId && (
-            <Button variant="ghost">
-              <LucideTrash2 />
+            <Button
+              variant="ghost"
+              onClick={() => deletePost(post.id)}
+              disabled={isDeletePending}
+            >
+              {isDeletePending ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <LucideTrash2 />
+              )}
             </Button>
           )}
         </div>
