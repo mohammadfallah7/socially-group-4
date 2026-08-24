@@ -1,5 +1,6 @@
 import { axiosInstance } from "@/lib/axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "@/components/ui/toast";
 
 export const useCreateComment = (postId: string) => {
   const queryClient = useQueryClient();
@@ -16,8 +17,13 @@ export const useCreateComment = (postId: string) => {
       return response.data;
     },
 
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["posts"] });
+
+      toast.add({
+        type: "success",
+        description: data.message || "Comment created successfully",
+      });
     },
   });
 };
