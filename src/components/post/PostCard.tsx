@@ -5,8 +5,8 @@ import { Heart, MessageCircle, Send, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { axiosInstance } from "@/lib/axios";
+import { useCreateComment } from "@/hooks/use-create-comment";
 
 type PostCardProps = {
   post: Post;
@@ -17,48 +17,35 @@ const PostCard = ({ post }: PostCardProps) => {
   const [comment, setComment] = useState("");
   const [commentError, setCommentError] = useState(false);
   const [isCommentLoading, setIsCommentLoading] = useState(false);
-  const queryClient = useQueryClient();
+  const { mutate: createComment } = useCreateComment(post.id);
 
-  const commentMutation = useMutation({
-    mutationFn: async () => {
-      const response = await axiosInstance.post(
-        `/api/posts/${post.id}/comment`,
-        {
-          content: comment,
-        },
-      );
 
-      return response.data;
+const handleComment = () => {
+  setIsCommentLoading(true);
+
+  if (comment.trim().length < 5) {
+    setCommentError(true);
+
+    setTimeout(() => {
+      setIsCommentLoading(false);
+    }, 500);
+
+    return;
+  }
+
+  setCommentError(false);
+
+  createComment(comment, {
+    onSuccess: () => {
+      setComment("");
+      setIsCommentLoading(false);
     },
 
-    onSuccess: async () => {
-      setComment("");
-      setCommentError(false);
-
-      await queryClient.invalidateQueries({
-        queryKey: ["posts"],
-      });
-
+    onError: () => {
       setIsCommentLoading(false);
     },
   });
-
-  const handleComment = () => {
-    setIsCommentLoading(true);
-
-    if (comment.trim().length < 5) {
-      setCommentError(true);
-
-      setTimeout(() => {
-        setIsCommentLoading(false);
-      }, 500);
-
-      return;
-    }
-
-    setCommentError(false);
-    commentMutation.mutate();
-  };
+};
 
   return (
     <Card className="shadow-md shadow-muted">
