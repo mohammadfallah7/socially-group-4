@@ -12,6 +12,8 @@ import { formatDistanceToNow } from "date-fns";
 import { Calendar, Link as LinkIcon, MapPin } from "lucide-react";
 import { useState } from "react";
 import { useParams } from "react-router";
+import { useToggleFollow } from "@/hooks/use-toggle-follow";
+import { Loader2 } from "lucide-react";
 
 const ProfilePage = () => {
   const { username } = useParams();
@@ -24,6 +26,9 @@ const ProfilePage = () => {
   const { data: likedPosts, isLoading: isLikesLoading } = useUserLikes(
     profile?.id,
   );
+
+  const { mutate: toggleFollow, isPending: isFollowPending } =
+    useToggleFollow();
 
   console.log(likedPosts);
 
@@ -94,10 +99,20 @@ const ProfilePage = () => {
 
           {/* Edit Profile / Follow */}
           {isOwnProfile ? (
-            <EditProfileModal user={profile} />
+            <Button className="w-full cursor-pointer">Edit Profile</Button>
           ) : (
-            <Button className="w-full cursor-pointer">
-              {alreadyFollowed ? "Unfollow" : "Follow"}
+            <Button
+              className="w-full cursor-pointer"
+              onClick={() => toggleFollow(profile.id)}
+              disabled={isFollowPending}
+            >
+              {isFollowPending ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : alreadyFollowed ? (
+                "Unfollow"
+              ) : (
+                "Follow"
+              )}
             </Button>
           )}
 
