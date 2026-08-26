@@ -1,8 +1,12 @@
+import { useState } from "react";
 import { useLogout } from "@/hooks/use-logout";
 import { getUsernameFromEmail } from "@/lib/utils";
 import { useSessionStore } from "@/stores/session.store";
 import { Bell, Home, LogOut, Menu, User } from "lucide-react";
 import { Link } from "react-router";
+
+import SearchUsers from "./SearchUsers";
+import Container from "./Container";
 import { ModeToggle } from "../ModeToggle";
 import { Button } from "../ui/button";
 import {
@@ -12,12 +16,12 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "../ui/sheet";
-import Container from "./Container";
 
 const Header = () => {
   const { session } = useSessionStore();
 
   const { mutate: logout, isPending } = useLogout();
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -31,6 +35,13 @@ const Header = () => {
           Socially
         </Link>
 
+        {/* Desktop Search */}
+        <div className="hidden flex-1 justify-center px-6 md:ml-7 md:flex">
+          <div className="w-full max-w-md">
+            <SearchUsers />
+          </div>
+        </div>
+
         {/* Desktop Navigation */}
         <nav className="hidden items-center gap-3 md:flex">
           <ModeToggle />
@@ -43,7 +54,7 @@ const Header = () => {
 
           {session ? (
             <>
-              {/* Notification */}
+              {/* Notifications */}
               <Button
                 render={<Link to="/notifications" />}
                 variant="ghost"
@@ -88,7 +99,7 @@ const Header = () => {
         <div className="flex items-center gap-2 md:hidden">
           <ModeToggle />
 
-          <Sheet>
+          <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
             <SheetTrigger>
               <Button size="icon">
                 <Menu className="size-4" />
@@ -100,6 +111,14 @@ const Header = () => {
                 <SheetTitle>Menu</SheetTitle>
               </SheetHeader>
 
+              {/* Mobile Search */}
+              <div className="mt-4 flex justify-center px-4">
+                <div className="w-full max-w-sm">
+                  <SearchUsers onSelectUser={() => setSheetOpen(false)} />
+                </div>
+              </div>
+
+              {/* Mobile Navigation */}
               <nav className="mt-5 flex flex-col gap-3 px-4">
                 {/* Home */}
                 <Button
@@ -107,6 +126,7 @@ const Header = () => {
                   variant="ghost"
                   size="lg"
                   className="w-full justify-center"
+                  onClick={() => setSheetOpen(false)}
                 >
                   <Home className="size-4" />
                   Home
@@ -114,12 +134,13 @@ const Header = () => {
 
                 {session ? (
                   <>
-                    {/* Notification */}
+                    {/* Notifications */}
                     <Button
                       render={<Link to="/notifications" />}
                       variant="ghost"
                       size="lg"
                       className="w-full justify-center"
+                      onClick={() => setSheetOpen(false)}
                     >
                       <Bell className="size-4" />
                       Notification
@@ -137,6 +158,7 @@ const Header = () => {
                       variant="ghost"
                       size="lg"
                       className="w-full justify-center"
+                      onClick={() => setSheetOpen(false)}
                     >
                       <User className="size-4" />
                       Profile
@@ -147,7 +169,10 @@ const Header = () => {
                       variant="ghost"
                       size="lg"
                       className="w-full justify-center"
-                      onClick={handleLogout}
+                      onClick={() => {
+                        handleLogout();
+                        setSheetOpen(false);
+                      }}
                       disabled={isPending}
                     >
                       <LogOut className="size-4" />
@@ -159,6 +184,7 @@ const Header = () => {
                     render={<Link to="/sign-in" />}
                     size="lg"
                     className="w-full"
+                    onClick={() => setSheetOpen(false)}
                   >
                     Sign in
                   </Button>

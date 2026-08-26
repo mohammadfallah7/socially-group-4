@@ -1,4 +1,4 @@
-export type RecommendedUser = {
+export interface SearchedUser {
   id: string;
   name: string;
   email: string;
@@ -12,5 +12,10 @@ export type RecommendedUser = {
   _count: {
     followers: number;
   };
-};
+}
 
+export interface SearchUsersResponse {
+  message: string;
+  success: boolean;
+  data: SearchedUser[];
+}
