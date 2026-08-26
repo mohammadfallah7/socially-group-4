@@ -2,6 +2,8 @@ import EditProfileModal from "@/components/profile/EditProfileModal";
 import PostCard from "@/components/post/PostCard";
 import PostSkeleton from "@/components/post/PostSkeleton";
 import ProfileLoading from "@/components/profile/ProfileLoading";
+import { UserFollowersModal } from "@/components/profile/UserFollowersModal";
+import { UserFollowingsModal } from "@/components/profile/UserFollowingsModal";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useUserLikes } from "@/hooks/use-user-likes";
@@ -17,6 +19,8 @@ const ProfilePage = () => {
   const { username } = useParams();
   const { session } = useSessionStore();
   const [activeTab, setActiveTab] = useState<"posts" | "likes">("posts");
+  const [isFollowersOpen, setIsFollowersOpen] = useState(false);
+  const [isFollowingsOpen, setIsFollowingsOpen] = useState(false);
 
   const { data: profile, isLoading, isError } = useUsrProfile(username);
 
@@ -25,14 +29,10 @@ const ProfilePage = () => {
     profile?.id,
   );
 
-  console.log(likedPosts);
-
-  // Profile Loading
   if (isLoading) {
     return <ProfileLoading />;
   }
 
-  // Profile Error
   if (isError || !profile) {
     return (
       <div className="flex min-h-60 items-center justify-center">
@@ -48,7 +48,6 @@ const ProfilePage = () => {
 
   return (
     <div className="space-y-6">
-      {/* Profile Card */}
       <Card className="mx-auto w-full max-w-lg shadow-md shadow-muted">
         <CardHeader className="flex flex-col items-center gap-3">
           <img
@@ -71,15 +70,20 @@ const ProfilePage = () => {
         </CardHeader>
 
         <CardContent className="space-y-6">
-          {/* Stats */}
           <div className="flex items-center justify-between">
-            <div className="flex flex-col items-center">
+            <div
+              className="flex flex-col items-center cursor-pointer hover:opacity-80 transition"
+              onClick={() => setIsFollowingsOpen(true)}
+            >
               <h3 className="font-semibold">{profile._count.followings}</h3>
 
               <p className="text-sm text-muted-foreground">Following</p>
             </div>
 
-            <div className="flex flex-col items-center">
+            <div
+              className="flex flex-col items-center cursor-pointer hover:opacity-80 transition"
+              onClick={() => setIsFollowersOpen(true)}
+            >
               <h3 className="font-semibold">{profile._count.followers}</h3>
 
               <p className="text-sm text-muted-foreground">Followers</p>
@@ -92,7 +96,6 @@ const ProfilePage = () => {
             </div>
           </div>
 
-          {/* Edit Profile / Follow */}
           {isOwnProfile ? (
             <EditProfileModal user={profile} />
           ) : (
@@ -101,7 +104,6 @@ const ProfilePage = () => {
             </Button>
           )}
 
-          {/* User Details */}
           <div className="flex flex-col gap-3">
             <div className="flex items-center gap-1.5 text-muted-foreground">
               <MapPin className="size-4" />
@@ -128,9 +130,7 @@ const ProfilePage = () => {
         </CardContent>
       </Card>
 
-      {/* Posts / Likes */}
       <div className="space-y-6">
-        {/* Tabs */}
         <div className="flex h-9 w-full rounded-lg bg-muted p-1">
           <button
             type="button"
@@ -153,7 +153,6 @@ const ProfilePage = () => {
           </button>
         </div>
 
-        {/* Posts */}
         {activeTab === "posts" && (
           <div className="space-y-4">
             {isPostsLoading ? (
@@ -171,7 +170,6 @@ const ProfilePage = () => {
           </div>
         )}
 
-        {/* Likes */}
         {activeTab === "likes" && (
           <div className="space-y-4">
             {isLikesLoading ? (
@@ -191,6 +189,18 @@ const ProfilePage = () => {
           </div>
         )}
       </div>
+
+      <UserFollowersModal
+        userId={profile.id}
+        isOpen={isFollowersOpen}
+        onClose={() => setIsFollowersOpen(false)}
+      />
+
+      <UserFollowingsModal
+        userId={profile.id}
+        isOpen={isFollowingsOpen}
+        onClose={() => setIsFollowingsOpen(false)}
+      />
     </div>
   );
 };

@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import { useState } from "react";
 import {
   Card,
   CardContent,
@@ -16,6 +17,8 @@ import { axiosInstance } from "@/lib/axios";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Response } from "@/types/response.type";
+import { UserFollowersModal } from "@/components/profile/UserFollowersModal";
+import { UserFollowingsModal } from "@/components/profile/UserFollowingsModal";
 
 const SignInSidebarSkeleton = () => {
   return (
@@ -68,6 +71,8 @@ const SignInSidebarSkeleton = () => {
 
 const SignInSidebar = ({ session }: { session: Session }) => {
   const username = getUsernameFromEmail(session.user.email);
+  const [isFollowersOpen, setIsFollowersOpen] = useState(false);
+  const [isFollowingsOpen, setIsFollowingsOpen] = useState(false);
 
   const {
     data: profile,
@@ -92,68 +97,86 @@ const SignInSidebar = ({ session }: { session: Session }) => {
   }
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <Link
-          to={`/profile/${username}`}
-          className="flex flex-col items-center justify-center gap-3"
-        >
-          <img
-            src={profile.image || "/user_profile.svg"}
-            alt={profile.name}
-            className="size-12 rounded-full object-cover"
-          />
+    <>
+      <Card className="w-full">
+        <CardHeader>
+          <Link
+            to={`/profile/${username}`}
+            className="flex flex-col items-center justify-center gap-3"
+          >
+            <img
+              src={profile.image || "/user_profile.svg"}
+              alt={profile.name}
+              className="size-12 rounded-full object-cover"
+            />
 
-          <div className="flex flex-col items-center gap-1.5 text-center">
-            <h2 className="text-lg font-semibold">{profile.name}</h2>
-            <p className="text-sm text-muted-foreground">{username}</p>
-          </div>
-          {profile.bio && (
-            <p className="text-center text-sm text-muted-foreground">
-              {profile.bio}
-            </p>
-          )}
-        </Link>
-      </CardHeader>
+            <div className="flex flex-col items-center gap-1.5 text-center">
+              <h2 className="text-lg font-semibold">{profile.name}</h2>
+              <p className="text-sm text-muted-foreground">{username}</p>
+            </div>
+            {profile.bio && (
+              <p className="text-center text-sm text-muted-foreground">
+                {profile.bio}
+              </p>
+            )}
+          </Link>
+        </CardHeader>
 
-      <CardContent className="space-y-6">
-        {/* Stats */}
-        <div className="space-y-4">
-          <div className="h-px w-full bg-gray-300/50" />
+        <CardContent className="space-y-6">
+          <div className="space-y-4">
+            <div className="h-px w-full bg-gray-300/50" />
 
-          <div className="flex items-center justify-between">
-            <div className="flex flex-col items-center">
-              <h3 className="font-semibold">{profile._count.followings}</h3>
+            <div className="flex items-center justify-between">
+              <div
+                className="flex flex-col items-center cursor-pointer hover:opacity-80 transition"
+                onClick={() => setIsFollowingsOpen(true)}
+              >
+                <h3 className="font-semibold">{profile._count.followings}</h3>
 
-              <p className="text-sm text-muted-foreground">Followings</p>
+                <p className="text-sm text-muted-foreground">Followings</p>
+              </div>
+
+              <div
+                className="flex flex-col items-center cursor-pointer hover:opacity-80 transition"
+                onClick={() => setIsFollowersOpen(true)}
+              >
+                <h3 className="font-semibold">{profile._count.followers}</h3>
+
+                <p className="text-sm text-muted-foreground">Followers</p>
+              </div>
             </div>
 
-            <div className="flex flex-col items-center">
-              <h3 className="font-semibold">{profile._count.followers}</h3>
+            <div className="h-px w-full bg-gray-300/50" />
+          </div>
 
-              <p className="text-sm text-muted-foreground">Followers</p>
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-1.5 text-muted-foreground">
+              <LucideMapPin className="size-4" />
+
+              <p className="text-sm">{profile.location || "No Location"}</p>
+            </div>
+
+            <div className="flex items-center gap-1.5 text-muted-foreground">
+              <LucideLink className="size-4" />
+
+              <p className="text-sm">{profile.website || "No Website"}</p>
             </div>
           </div>
+        </CardContent>
+      </Card>
 
-          <div className="h-px w-full bg-gray-300/50" />
-        </div>
+      <UserFollowersModal
+        userId={profile.id}
+        isOpen={isFollowersOpen}
+        onClose={() => setIsFollowersOpen(false)}
+      />
 
-        {/* Details */}
-        <div className="flex flex-col gap-3">
-          <div className="flex items-center gap-1.5 text-muted-foreground">
-            <LucideMapPin className="size-4" />
-
-            <p className="text-sm">{profile.location || "No Location"}</p>
-          </div>
-
-          <div className="flex items-center gap-1.5 text-muted-foreground">
-            <LucideLink className="size-4" />
-
-            <p className="text-sm">{profile.website || "No Website"}</p>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+      <UserFollowingsModal
+        userId={profile.id}
+        isOpen={isFollowingsOpen}
+        onClose={() => setIsFollowingsOpen(false)}
+      />
+    </>
   );
 };
 
