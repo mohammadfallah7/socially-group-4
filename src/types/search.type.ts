@@ -1,4 +1,4 @@
-export type RecommendedUser = {
+export interface SearchedUser {
   id: string;
   name: string;
   email: string;
@@ -9,8 +9,4 @@ export type RecommendedUser = {
   website: string | null;
   createdAt: string;
   updatedAt: string;
-  _count: {
-    followers: number;
-  };
-};
-
+}

@@ -22,6 +22,9 @@ export const useDeletePost = () => {
       queryClient.invalidateQueries({
         queryKey: ["posts"],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["user-posts"],
+      });
 
       toast.add({
         type: "success",
@@ -32,8 +35,7 @@ export const useDeletePost = () => {
     onError: (error: AxiosError<DeletePostError>) => {
       toast.add({
         type: "error",
-        description:
-          error.response?.data.message || "Post not found",
+        description: error.response?.data.message || "Post not found",
       });
     },
   });

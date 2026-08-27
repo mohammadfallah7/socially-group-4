@@ -13,7 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/toast";
 import { useUpdateProfile } from "@/hooks/use-update-profile";
 import { LucideLoader2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 interface EditProfileModalProps {
   user: {
@@ -27,19 +27,10 @@ interface EditProfileModalProps {
 
 export const EditProfileModal = ({ user }: EditProfileModalProps) => {
   const [open, setOpen] = useState(false);
-  const [name, setName] = useState(user?.name || "");
-  const [bio, setBio] = useState(user?.bio || "");
-  const [location, setLocation] = useState(user?.location || "");
-  const [website, setWebsite] = useState(user?.website || "");
-
-  useEffect(() => {
-    if (open) {
-      setName(user?.name || "");
-      setBio(user?.bio || "");
-      setLocation(user?.location || "");
-      setWebsite(user?.website || "");
-    }
-  }, [open, user]);
+  const [name, setName] = useState(user.name);
+  const [bio, setBio] = useState(user?.bio ?? undefined);
+  const [location, setLocation] = useState(user?.location ?? undefined);
+  const [website, setWebsite] = useState(user?.website ?? undefined);
 
   const { mutate: updateProfile, isPending } = useUpdateProfile();
 
@@ -58,9 +49,9 @@ export const EditProfileModal = ({ user }: EditProfileModalProps) => {
       {
         userId: user.id,
         name,
-        bio: bio || undefined,
-        location: location || undefined,
-        website: website || undefined,
+        bio: bio,
+        location: location,
+        website: website,
       },
       {
         onSuccess: (data) => {
@@ -70,14 +61,13 @@ export const EditProfileModal = ({ user }: EditProfileModalProps) => {
             description: data.message || "Profile updated successfully",
           });
         },
-        onError: (error: any) => {
+        onError: (error) => {
           toast.add({
             type: "error",
-            description:
-              error.response?.data?.error || "Failed to update profile",
+            description: error.message || "Failed to update profile",
           });
         },
-      }
+      },
     );
   };
 
