@@ -15,9 +15,9 @@ export const useUpdateProfile = () => {
 
   return useMutation({
     mutationFn: async ({ userId, ...data }: UpdateProfilePayload) => {
-      const response = await axiosInstance.put<Response<any>>(
+      const response = await axiosInstance.put<Response<object>>(
         `/api/users/${userId}`,
-        data
+        data,
       );
       return response.data;
     },
@@ -26,6 +26,8 @@ export const useUpdateProfile = () => {
       queryClient.invalidateQueries({ queryKey: ["user-profile"] });
       queryClient.invalidateQueries({ queryKey: ["user"] });
       queryClient.invalidateQueries({ queryKey: ["posts"] });
+      queryClient.invalidateQueries({ queryKey: ["user-posts"] });
+      queryClient.invalidateQueries({ queryKey: ["sidebar-profile"] });
     },
   });
 };

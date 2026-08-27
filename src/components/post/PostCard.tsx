@@ -2,11 +2,20 @@ import { cn, getUsernameFromEmail } from "@/lib/utils";
 import { useSessionStore } from "@/stores/session.store";
 import type { Post } from "@/types/post.type";
 import { formatDistanceToNow } from "date-fns";
-import { Heart, LucideTrash2, MessageCircle, Send, Loader2 } from "lucide-react";
+import { useDeletePost } from "@/hooks/use-delete-post";
+import {
+  Heart,
+  LucideTrash2,
+  MessageCircle,
+  Send,
+  Loader2,
+} from "lucide-react";
 import { useState } from "react";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
-import { useDeletePost } from "@/hooks/use-delete-post";
+import { useToggleLike } from "@/hooks/use-toggle-like";
+import UserAvatar from "../UserAvatar";
+import { toast } from "../ui/toast";
 
 type PostCardProps = {
   post: Post;
@@ -14,6 +23,8 @@ type PostCardProps = {
 
 const PostCard = ({ post }: PostCardProps) => {
   const [addComment, setAddComment] = useState(false);
+  const { mutate: toggleLike, isPending: isLikeLoading } = useToggleLike();
+
   const { session } = useSessionStore();
 
   const isLiked = post.likes.some((l) => l.userId === session?.user.id);
@@ -22,17 +33,36 @@ const PostCard = ({ post }: PostCardProps) => {
     deletePost(post.id);
   };
 
+  const [isOwnPostLoading, setIsOwnPostLoading] = useState(false);
+
+  const isLikeButtonLoading = isLikeLoading || isOwnPostLoading;
+
+  const handleLike = () => {
+    if (session?.user.id === post.authorId) {
+      toast.add({
+        type: "error",
+        description: "You can't like or dislike your post",
+      });
+
+      setIsOwnPostLoading(true);
+
+      setTimeout(() => {
+        setIsOwnPostLoading(false);
+      }, 500);
+
+      return;
+    }
+
+    toggleLike(post.id);
+  };
+
   return (
     <Card className="shadow-md shadow-muted">
       <CardContent className="flex flex-col gap-5">
         {/* Post Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img
-              src="/user_profile.svg"
-              alt="Avatar"
-              className="size-8 rounded-full object-cover"
-            />
+            <UserAvatar image={post.author.image} />
 
             <div className="flex items-center gap-4">
               <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
@@ -52,7 +82,7 @@ const PostCard = ({ post }: PostCardProps) => {
           {session?.user.id === post.authorId && (
             <Button
               variant="ghost"
-              onClick={() => deletePost(post.id)}
+              onClick={handleDelete}
               disabled={isDeletePending}
             >
               {isDeletePending ? (
@@ -74,9 +104,17 @@ const PostCard = ({ post }: PostCardProps) => {
             className={cn(
               "cursor-pointer",
               isLiked && "text-red-500 hover:text-red-500",
+              isLikeButtonLoading && "opacity-50",
             )}
+            disabled={isLikeButtonLoading}
+            onClick={handleLike}
           >
-            <Heart className={cn(isLiked && "fill-red-500 text-red-500")} />
+            {isLikeButtonLoading ? (
+              <Loader2 className="animate-spin" />
+            ) : (
+              <Heart className={cn(isLiked && "fill-red-500")} />
+            )}
+
             {post._count.likes}
           </Button>
 
