@@ -16,7 +16,6 @@ export const useToggleLike = () => {
       queryClient.invalidateQueries({
         queryKey: ["posts"],
       });
-
       queryClient.invalidateQueries({
         queryKey: ["user-likes"],
       });
