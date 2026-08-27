@@ -16,6 +16,7 @@ import { Card, CardContent } from "../ui/card";
 import { useToggleLike } from "@/hooks/use-toggle-like";
 import UserAvatar from "../UserAvatar";
 import { toast } from "../ui/toast";
+import { Link } from "react-router";
 
 type PostCardProps = {
   post: Post;
@@ -61,7 +62,10 @@ const PostCard = ({ post }: PostCardProps) => {
       <CardContent className="flex flex-col gap-5">
         {/* Post Header */}
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
+          <Link
+            to={`/profile/${getUsernameFromEmail(post.author.email)}`}
+            className="flex items-center gap-3"
+          >
             <UserAvatar image={post.author.image} />
 
             <div className="flex items-center gap-4">
@@ -78,7 +82,7 @@ const PostCard = ({ post }: PostCardProps) => {
                 })}
               </span>
             </div>
-          </div>
+          </Link>
           {session?.user.id === post.authorId && (
             <Button
               variant="ghost"
@@ -96,6 +100,13 @@ const PostCard = ({ post }: PostCardProps) => {
 
         {/* Post */}
         <p>{post.content}</p>
+
+        {post.image && (
+          <img
+            src={`https://79gcelddzk.ucarecd.net/${post.image}/`}
+            className="object-cover rounded-xl aspect-square h-80 w-2/3"
+          />
+        )}
 
         {/* Actions */}
         <div className="flex gap-6 text-muted-foreground">
@@ -138,12 +149,11 @@ const PostCard = ({ post }: PostCardProps) => {
           <div className="flex flex-col gap-5 border-t pt-5">
             {post.comments.map((comment) => (
               <div key={comment.id} className="flex flex-col gap-3">
-                <div className="flex items-center gap-3">
-                  <img
-                    src={comment.author.image || "/user_profile.svg"}
-                    alt="Avatar"
-                    className="size-8 rounded-full object-cover"
-                  />
+                <Link
+                  to={`/profile/${getUsernameFromEmail(comment.author.email)}`}
+                  className="flex items-center gap-3"
+                >
+                  <UserAvatar image={comment.author.image} />
 
                   <div className="flex items-center gap-3">
                     <h3 className="font-medium">{comment.author.name}</h3>
@@ -158,7 +168,7 @@ const PostCard = ({ post }: PostCardProps) => {
                       })}
                     </span>
                   </div>
-                </div>
+                </Link>
 
                 <p className="text-sm">{comment.content}</p>
               </div>

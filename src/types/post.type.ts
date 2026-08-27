@@ -20,6 +20,7 @@ export type Post = {
   id: string;
   authorId: string;
   content: string;
+  image: string | null;
   createdAt: string;
   updatedAt: string;
   author: Author;
