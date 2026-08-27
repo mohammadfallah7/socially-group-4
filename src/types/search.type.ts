@@ -9,13 +9,4 @@ export interface SearchedUser {
   website: string | null;
   createdAt: string;
   updatedAt: string;
-  _count: {
-    followers: number;
-  };
-}
-
-export interface SearchUsersResponse {
-  message: string;
-  success: boolean;
-  data: SearchedUser[];
 }

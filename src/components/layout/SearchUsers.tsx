@@ -5,6 +5,7 @@ import { getUsernameFromEmail } from "@/lib/utils";
 import { useUserSearch } from "@/hooks/use-user-search";
 
 import { Input } from "../ui/input";
+import UserAvatar from "../UserAvatar";
 
 interface SearchUsersProps {
   onSelectUser?: () => void;
@@ -58,25 +59,13 @@ const SearchUsers = ({ onSelectUser }: SearchUsersProps) => {
                   >
                     {/* User Avatar */}
                     <div className="flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-muted text-sm font-medium">
-                      {user.image ? (
-                        <img
-                          src={user.image}
-                          alt={user.name}
-                          className="size-9 object-cover"
-                        />
-                      ) : (
-                        user.name.charAt(0).toUpperCase()
-                      )}
+                      <UserAvatar image={user.image} />
                     </div>
 
                     {/* User Info */}
                     <div className="flex min-w-0 flex-col">
                       <span className="truncate text-sm font-medium">
                         {user.name}
-                      </span>
-
-                      <span className="truncate text-xs text-muted-foreground">
-                        {user._count?.followers ?? 0} followers
                       </span>
                     </div>
                   </Link>
