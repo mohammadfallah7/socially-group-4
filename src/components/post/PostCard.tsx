@@ -14,6 +14,7 @@ import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
 import { useToggleLike } from "@/hooks/use-toggle-like";
 import { toast } from "@/components/ui/toast";
+import UserAvatar from "../UserAvatar";
 
 type PostCardProps = {
   post: Post;
@@ -56,11 +57,7 @@ const PostCard = ({ post }: PostCardProps) => {
         {/* Post Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img
-              src="/user_profile.svg"
-              alt="Avatar"
-              className="size-8 rounded-full object-cover"
-            />
+            <UserAvatar image={post.author.image} />
 
             <div className="flex items-center gap-4">
               <div className="flex flex-col gap-4 lg:flex-row lg:items-center">

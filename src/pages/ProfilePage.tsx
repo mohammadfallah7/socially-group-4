@@ -1,3 +1,4 @@
+import EditProfileModal from "@/components/profile/EditProfileModal";
 import PostCard from "@/components/post/PostCard";
 import PostSkeleton from "@/components/post/PostSkeleton";
 import ProfileLoading from "@/components/profile/ProfileLoading";
@@ -93,7 +94,7 @@ const ProfilePage = () => {
 
           {/* Edit Profile / Follow */}
           {isOwnProfile ? (
-            <Button className="w-full cursor-pointer">Edit Profile</Button>
+            <EditProfileModal user={profile} />
           ) : (
             <Button className="w-full cursor-pointer">
               {alreadyFollowed ? "Unfollow" : "Follow"}

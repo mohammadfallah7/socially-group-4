@@ -11,21 +11,41 @@ export const useCreatePost = () => {
   return useMutation({
     mutationFn: async (content: string) => {
       const response = await axiosInstance.post<Response<Post>>("/api/posts", {
-        content,
+        content: content.trim(),
       });
+
       return response.data;
     },
+
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      queryClient.invalidateQueries({
+        queryKey: ["posts"],
+      });
+
       toast.add({
         type: "success",
-        description: data.message || "Post created successfully",
+        description: data.message,
       });
     },
+
     onError: (error: AxiosError<ErrorResponse<string>>) => {
+      const errorData = error.response?.data?.error;
+
+      let message = "Failed to create post";
+
+      if (typeof errorData === "string") {
+        message = errorData;
+      } else if (errorData && typeof errorData === "object") {
+        if ("content" in errorData) {
+          message = "invalid feilds";
+        } else {
+          message = Object.values(errorData).join(", ");
+        }
+      }
+
       toast.add({
         type: "error",
-        description: error.response?.data.error || "Failed to create post",
+        description: message,
       });
     },
   });
