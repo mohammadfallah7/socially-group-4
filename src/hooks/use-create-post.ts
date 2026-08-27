@@ -24,10 +24,7 @@ export const useCreatePost = () => {
 
       toast.add({
         type: "success",
-        description:
-          typeof data.message === "string"
-            ? data.message
-            : "Post created successfully",
+        description: data.message,
       });
     },
 
