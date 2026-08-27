@@ -5,6 +5,7 @@ import { useCreatePost } from "@/hooks/use-create-post";
 import { useSessionStore } from "@/stores/session.store";
 import { LucideLoader2, Send } from "lucide-react";
 import { useState } from "react";
+import UserAvatar from "../UserAvatar";
 
 export const CreatePostForm = () => {
   const [content, setContent] = useState("");
@@ -39,11 +40,7 @@ export const CreatePostForm = () => {
       <CardContent className="pt-6 space-y-4">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="flex items-start gap-3">
-            <img
-              src={session.user.image || "/user_profile.svg"}
-              alt="Avatar"
-              className="size-8 rounded-full object-cover"
-            />
+            <UserAvatar image={session.user.image} />
             <textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
