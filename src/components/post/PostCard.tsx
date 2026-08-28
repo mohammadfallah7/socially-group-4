@@ -24,12 +24,15 @@ type PostCardProps = {
 
 const PostCard = ({ post }: PostCardProps) => {
   const [addComment, setAddComment] = useState(false);
+
   const { mutate: toggleLike, isPending: isLikeLoading } = useToggleLike();
 
   const { session } = useSessionStore();
 
   const isLiked = post.likes.some((l) => l.userId === session?.user.id);
+
   const { mutate: deletePost, isPending: isDeletePending } = useDeletePost();
+
   const handleDelete = () => {
     deletePost(post.id);
   };
@@ -71,6 +74,7 @@ const PostCard = ({ post }: PostCardProps) => {
             <div className="flex items-center gap-4">
               <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
                 <h2 className="text-lg font-medium">{post.author.name}</h2>
+
                 <span className="text-muted-foreground">
                   @{getUsernameFromEmail(post.author.email)}
                 </span>
@@ -83,6 +87,7 @@ const PostCard = ({ post }: PostCardProps) => {
               </span>
             </div>
           </Link>
+
           {session?.user.id === post.authorId && (
             <Button
               variant="ghost"
@@ -104,7 +109,7 @@ const PostCard = ({ post }: PostCardProps) => {
         {post.image && (
           <img
             src={`https://79gcelddzk.ucarecd.net/${post.image}/`}
-            className="object-cover rounded-xl aspect-square h-80 w-2/3"
+            className="aspect-square h-80 w-2/3 rounded-xl object-cover"
           />
         )}
 
@@ -140,6 +145,7 @@ const PostCard = ({ post }: PostCardProps) => {
             <MessageCircle
               className={cn(addComment && "fill-blue-500 text-blue-500")}
             />
+
             {post._count.comments}
           </Button>
         </div>
@@ -175,7 +181,7 @@ const PostCard = ({ post }: PostCardProps) => {
             ))}
 
             {/* Add Comment */}
-            <div className="flex items-start gap-3 border-t pt-5">
+            <div className="flex items-start gap-3 pt-5">
               <img
                 src="/user_profile.svg"
                 alt="Avatar"
