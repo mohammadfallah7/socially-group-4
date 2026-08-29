@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router";
 import {
   Card,
@@ -16,6 +17,12 @@ import { axiosInstance } from "@/lib/axios";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Response } from "@/types/response.type";
+import { useGetFollowers } from "@/hooks/use-get-followers";
+import { useGetFollowings } from "@/hooks/use-get-followings";
+import {
+  FollowListModal,
+  type FollowListItem,
+} from "@/components/profile/FollowListModal";
 
 const SignInSidebarSkeleton = () => {
   return (
@@ -68,6 +75,14 @@ const SignInSidebarSkeleton = () => {
 
 const SignInSidebar = ({ session }: { session: Session }) => {
   const username = getUsernameFromEmail(session.user.email);
+  const [activeModal, setActiveModal] = useState<
+    "Followers" | "Following" | null
+  >(null);
+
+  const { data: followersData, isLoading: isLoadingFollowers } =
+    useGetFollowers(session.user.id, activeModal === "Followers");
+  const { data: followingsData, isLoading: isLoadingFollowings } =
+    useGetFollowings(session.user.id, activeModal === "Following");
 
   const {
     data: profile,
@@ -91,69 +106,105 @@ const SignInSidebar = ({ session }: { session: Session }) => {
     return null;
   }
 
+  const rawFollowers = Array.isArray(followersData)
+    ? followersData
+    : followersData?.data;
+
+  const rawFollowings = Array.isArray(followingsData)
+    ? followingsData
+    : followingsData?.data;
+
+  const followerItems: FollowListItem[] =
+    rawFollowers?.map((item) => ({
+      user: item.follower,
+      createdAt: item.createdAt,
+    })) || [];
+
+  const followingItems: FollowListItem[] =
+    rawFollowings?.map((item) => ({
+      user: item.following,
+      createdAt: item.createdAt,
+    })) || [];
+
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <Link
-          to={`/profile/${username}`}
-          className="flex flex-col items-center justify-center gap-3"
-        >
-          <img
-            src={profile.image || "/user_profile.svg"}
-            alt={profile.name}
-            className="size-12 rounded-full object-cover"
-          />
+    <>
+      <Card className="w-full">
+        <CardHeader>
+          <Link
+            to={`/profile/${username}`}
+            className="flex flex-col items-center justify-center gap-3"
+          >
+            <img
+              src={profile.image || "/user_profile.svg"}
+              alt={profile.name}
+              className="size-12 rounded-full object-cover"
+            />
 
-          <div className="flex flex-col items-center gap-1.5 text-center">
-            <h2 className="text-lg font-semibold">{profile.name}</h2>
-            <p className="text-sm text-muted-foreground">{username}</p>
-          </div>
-          {profile.bio && (
-            <p className="text-center text-sm text-muted-foreground">
-              {profile.bio}
-            </p>
-          )}
-        </Link>
-      </CardHeader>
+            <div className="flex flex-col items-center gap-1.5 text-center">
+              <h2 className="text-lg font-semibold">{profile.name}</h2>
+              <p className="text-sm text-muted-foreground">{username}</p>
+            </div>
+            {profile.bio && (
+              <p className="text-center text-sm text-muted-foreground">
+                {profile.bio}
+              </p>
+            )}
+          </Link>
+        </CardHeader>
 
-      <CardContent className="space-y-6">
-        {/* Stats */}
-        <div className="space-y-4">
-          <div className="h-px w-full bg-gray-300/50" />
+        <CardContent className="space-y-6">
+          <div className="space-y-4">
+            <div className="h-px w-full bg-gray-300/50" />
 
-          <div className="flex items-center justify-between">
-            <div className="flex flex-col items-center">
-              <h3 className="font-semibold">{profile._count.followings}</h3>
+            <div className="flex items-center justify-between">
+              <div
+                className="flex cursor-pointer flex-col items-center transition-opacity hover:opacity-80"
+                onClick={() => setActiveModal("Following")}
+              >
+                <h3 className="font-semibold">{profile._count.followings}</h3>
 
-              <p className="text-sm text-muted-foreground">Followings</p>
+                <p className="text-sm text-muted-foreground">Followings</p>
+              </div>
+
+              <div
+                className="flex cursor-pointer flex-col items-center transition-opacity hover:opacity-80"
+                onClick={() => setActiveModal("Followers")}
+              >
+                <h3 className="font-semibold">{profile._count.followers}</h3>
+
+                <p className="text-sm text-muted-foreground">Followers</p>
+              </div>
             </div>
 
-            <div className="flex flex-col items-center">
-              <h3 className="font-semibold">{profile._count.followers}</h3>
+            <div className="h-px w-full bg-gray-300/50" />
+          </div>
 
-              <p className="text-sm text-muted-foreground">Followers</p>
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-1.5 text-muted-foreground">
+              <LucideMapPin className="size-4" />
+
+              <p className="text-sm">{profile.location || "No Location"}</p>
+            </div>
+
+            <div className="flex items-center gap-1.5 text-muted-foreground">
+              <LucideLink className="size-4" />
+
+              <p className="text-sm">{profile.website || "No Website"}</p>
             </div>
           </div>
+        </CardContent>
+      </Card>
 
-          <div className="h-px w-full bg-gray-300/50" />
-        </div>
-
-        {/* Details */}
-        <div className="flex flex-col gap-3">
-          <div className="flex items-center gap-1.5 text-muted-foreground">
-            <LucideMapPin className="size-4" />
-
-            <p className="text-sm">{profile.location || "No Location"}</p>
-          </div>
-
-          <div className="flex items-center gap-1.5 text-muted-foreground">
-            <LucideLink className="size-4" />
-
-            <p className="text-sm">{profile.website || "No Website"}</p>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+      <FollowListModal
+        isOpen={activeModal !== null}
+        onClose={() => setActiveModal(null)}
+        title={activeModal || "Followers"}
+        items={activeModal === "Followers" ? followerItems : followingItems}
+        isLoading={
+          activeModal === "Followers" ? isLoadingFollowers : isLoadingFollowings
+        }
+      />
+    </>
   );
 };
 
