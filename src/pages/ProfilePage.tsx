@@ -20,6 +20,7 @@ import {
   FollowListModal,
   type FollowListItem,
 } from "@/components/profile/FollowListModal";
+import { getImageUrl } from "@/lib/utils";
 
 const ProfilePage = () => {
   const { username } = useParams();
@@ -86,7 +87,7 @@ const ProfilePage = () => {
       <Card className="mx-auto w-full max-w-lg shadow-md shadow-muted">
         <CardHeader className="flex flex-col items-center gap-3">
           <img
-            src={profile.image || "/user_profile.svg"}
+            src={getImageUrl(profile.image)}
             alt={profile.name}
             className="size-18 rounded-full object-cover"
           />
