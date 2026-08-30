@@ -1,4 +1,5 @@
 export type Author = {
+  id: string;
   name: string;
   email: string;
   image: string | null;
@@ -19,9 +20,24 @@ export type Post = {
   id: string;
   authorId: string;
   content: string;
+  image: string | null;
   createdAt: string;
   updatedAt: string;
   author: Author;
+  likes: Like[];
+  comments: Comment[];
+  _count: {
+    likes: number;
+    comments: number;
+  };
+};
+
+export type LikeResponse = {
+  id: string;
+  userId: string;
+  postId: string;
+  createdAt: string;
+  post: Post;
   likes: Like[];
   comments: Comment[];
   _count: {
