@@ -61,7 +61,7 @@ const PostCard = ({ post }: PostCardProps) => {
   };
 
   return (
-    <Card className="shadow-md shadow-muted">
+    <Card className="shadow-md shadow-muted dark:shadow-none">
       <CardContent className="flex flex-col gap-5">
         {/* Post Header */}
         <div className="flex items-center justify-between">

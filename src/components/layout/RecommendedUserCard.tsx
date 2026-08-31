@@ -4,6 +4,7 @@ import { Link } from "react-router";
 import { Button } from "../ui/button";
 import { Loader2 } from "lucide-react";
 import { useToggleFollow } from "@/hooks/use-toggle-follow";
+import UserAvatar from "../UserAvatar";
 
 const RecommendedUserCard = ({ user }: { user: RecommendedUser }) => {
   const { mutate, isPending } = useToggleFollow();
@@ -14,11 +15,7 @@ const RecommendedUserCard = ({ user }: { user: RecommendedUser }) => {
         to={`/profile/${getUsernameFromEmail(user.email)}`}
         className="flex items-center gap-3"
       >
-        <img
-          src={user.image || "/user_profile.svg"}
-          alt="Avatar"
-          className="size-8 rounded-full object-cover"
-        />
+        <UserAvatar image={user.image} />
 
         <div>
           <p className="text-md font-medium">{user.name}</p>
