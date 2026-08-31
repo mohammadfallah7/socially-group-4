@@ -1,4 +1,5 @@
 import { useRecommendedUsers } from "@/hooks/use-recommended-users";
+import { useSessionStore } from "@/stores/session.store";
 import { Card, CardContent } from "../ui/card";
 import { Skeleton } from "../ui/skeleton";
 import RecommendedUserCard from "./RecommendedUserCard";
@@ -21,16 +22,23 @@ const RecommendedUserSkeleton = () => {
 };
 
 const RecommendedUsers = () => {
-  const { data, isLoading } = useRecommendedUsers();
+  const { session, isLoading: isSessionLoading } = useSessionStore();
+  const { data, isLoading: isUsersLoading } = useRecommendedUsers();
+
+  if (isSessionLoading || !session) {
+    return null;
+  }
 
   return (
-    <Card className="shadow-muted shadow-md hidden lg:block lg:col-span-4 sticky top-24">
+    <Card className="sticky top-24 col-span-4 hidden shadow-md shadow-muted lg:block">
       <CardContent className="px-6">
-        <h2 className="mb-7 font-semibold text-lg">Recommended users</h2>
+        <h2 className="mb-7 text-lg font-semibold">Recommended users</h2>
 
         <div className="flex flex-col gap-5">
-          {isLoading
-            ? [1, 2, 3].map((_, i) => <RecommendedUserSkeleton key={i} />)
+          {isUsersLoading
+            ? [1, 2, 3].map((_, i) => (
+                <RecommendedUserSkeleton key={i} />
+              ))
             : data?.data.map((user) => (
                 <RecommendedUserCard user={user} key={user.id} />
               ))}
