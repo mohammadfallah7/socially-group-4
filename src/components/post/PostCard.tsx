@@ -27,7 +27,7 @@ type PostCardProps = {
   refetch?: () => void;
 };
 
-const PostCard = ({ post, refetch }: PostCardProps) => {
+const PostCard = ({ post }: PostCardProps) => {
   const [addComment, setAddComment] = useState(false);
   const [comment, setComment] = useState("");
   const [commentError, setCommentError] = useState(false);
@@ -35,8 +35,9 @@ const PostCard = ({ post, refetch }: PostCardProps) => {
   const [isOwnPostLoading, setIsOwnPostLoading] = useState(false);
 
   const { session } = useSessionStore();
-
   const { mutate: createComment } = useCreateComment(post.id);
+
+
 
   const { mutate: toggleLike, isPending: isLikeLoading } = useToggleLike();
 
@@ -104,7 +105,7 @@ const handleComment = () => {
   };
 
   return (
-    <Card className="shadow-md shadow-muted">
+    <Card className="shadow-md shadow-muted dark:shadow-none">
       <CardContent className="flex flex-col gap-5">
         {/* Post Header */}
         <div className="flex items-center justify-between">

@@ -1,3 +1,8 @@
+import { useState } from "react";
+import { useParams } from "react-router";
+import { formatDistanceToNow } from "date-fns";
+import { Calendar, Link as LinkIcon, MapPin, Loader2 } from "lucide-react";
+
 import EditProfileModal from "@/components/profile/EditProfileModal";
 import PostCard from "@/components/post/PostCard";
 import PostSkeleton from "@/components/post/PostSkeleton";
@@ -8,25 +13,38 @@ import { useUserLikes } from "@/hooks/use-user-likes";
 import { useUserPosts } from "@/hooks/use-user-posts";
 import { useUsrProfile } from "@/hooks/use-user-profile";
 import { useSessionStore } from "@/stores/session.store";
-import { formatDistanceToNow } from "date-fns";
-import { Calendar, Link as LinkIcon, MapPin } from "lucide-react";
-import { useState } from "react";
-import { useParams } from "react-router";
 import { useToggleFollow } from "@/hooks/use-toggle-follow";
-import { Loader2 } from "lucide-react";
+import { useGetFollowers } from "@/hooks/use-get-followers";
+import { useGetFollowings } from "@/hooks/use-get-followings";
+import {
+  FollowListModal,
+  type FollowListItem,
+} from "@/components/profile/FollowListModal";
+import { getImageUrl } from "@/lib/utils";
 
 const ProfilePage = () => {
   const { username } = useParams();
   const { session } = useSessionStore();
+
   const [activeTab, setActiveTab] = useState<"posts" | "likes">("posts");
+  const [activeModal, setActiveModal] = useState<
+    "Followers" | "Following" | null
+  >(null);
 
   const { data: profile, isLoading, isError } = useUsrProfile(username);
+
+  const { data: followersData, isLoading: isLoadingFollowers } =
+    useGetFollowers(profile?.id, activeModal === "Followers");
+
+  const { data: followingsData, isLoading: isLoadingFollowings } =
+    useGetFollowings(profile?.id, activeModal === "Following");
 
   const {
     data: posts,
     isLoading: isPostsLoading,
     refetch: refetchUserPosts,
   } = useUserPosts(profile?.id);
+
   const {
     data: likedPosts,
     isLoading: isLikesLoading,
@@ -36,14 +54,10 @@ const ProfilePage = () => {
   const { mutate: toggleFollow, isPending: isFollowPending } =
     useToggleFollow();
 
-  console.log(likedPosts);
-
-  // Profile Loading
   if (isLoading) {
     return <ProfileLoading />;
   }
 
-  // Profile Error
   if (isError || !profile) {
     return (
       <div className="flex min-h-60 items-center justify-center">
@@ -53,17 +67,35 @@ const ProfilePage = () => {
   }
 
   const isOwnProfile = session?.user.id === profile.id;
-  const alreadyFollowed = profile.followers.some(
-    (f) => f.followerId === session?.user.id,
-  );
+  const alreadyFollowed =
+    profile.followers?.some((f) => f.followerId === session?.user.id) ?? false;
+
+  const rawFollowers = Array.isArray(followersData)
+    ? followersData
+    : followersData?.data;
+
+  const rawFollowings = Array.isArray(followingsData)
+    ? followingsData
+    : followingsData?.data;
+
+  const followerItems: FollowListItem[] =
+    rawFollowers?.map((item) => ({
+      user: item.follower,
+      createdAt: item.createdAt,
+    })) || [];
+
+  const followingItems: FollowListItem[] =
+    rawFollowings?.map((item) => ({
+      user: item.following,
+      createdAt: item.createdAt,
+    })) || [];
 
   return (
     <div className="space-y-6">
-      {/* Profile Card */}
       <Card className="mx-auto w-full max-w-lg shadow-md shadow-muted">
         <CardHeader className="flex flex-col items-center gap-3">
           <img
-            src={profile.image || "/user_profile.svg"}
+            src={getImageUrl(profile.image)}
             alt={profile.name}
             className="size-18 rounded-full object-cover"
           />
@@ -82,15 +114,20 @@ const ProfilePage = () => {
         </CardHeader>
 
         <CardContent className="space-y-6">
-          {/* Stats */}
           <div className="flex items-center justify-between">
-            <div className="flex flex-col items-center">
+            <div
+              className="flex cursor-pointer flex-col items-center transition-opacity hover:opacity-80"
+              onClick={() => setActiveModal("Following")}
+            >
               <h3 className="font-semibold">{profile._count.followings}</h3>
 
               <p className="text-sm text-muted-foreground">Following</p>
             </div>
 
-            <div className="flex flex-col items-center">
+            <div
+              className="flex cursor-pointer flex-col items-center transition-opacity hover:opacity-80"
+              onClick={() => setActiveModal("Followers")}
+            >
               <h3 className="font-semibold">{profile._count.followers}</h3>
 
               <p className="text-sm text-muted-foreground">Followers</p>
@@ -103,9 +140,8 @@ const ProfilePage = () => {
             </div>
           </div>
 
-          {/* Edit Profile / Follow */}
           {isOwnProfile ? (
-            <Button className="w-full cursor-pointer">Edit Profile</Button>
+            <EditProfileModal user={profile} />
           ) : (
             <Button
               className="w-full cursor-pointer"
@@ -122,7 +158,6 @@ const ProfilePage = () => {
             </Button>
           )}
 
-          {/* User Details */}
           <div className="flex flex-col gap-3">
             <div className="flex items-center gap-1.5 text-muted-foreground">
               <MapPin className="size-4" />
@@ -149,9 +184,7 @@ const ProfilePage = () => {
         </CardContent>
       </Card>
 
-      {/* Posts / Likes */}
       <div className="space-y-6">
-        {/* Tabs */}
         <div className="flex h-9 w-full rounded-lg bg-muted p-1">
           <button
             type="button"
@@ -174,7 +207,6 @@ const ProfilePage = () => {
           </button>
         </div>
 
-        {/* Posts */}
         {activeTab === "posts" && (
           <div className="space-y-4">
             {isPostsLoading ? (
@@ -182,7 +214,7 @@ const ProfilePage = () => {
                 <PostSkeleton />
                 <PostSkeleton />
               </>
-            ) : posts!.length > 0 ? (
+            ) : (posts?.length ?? 0) > 0 ? (
               posts?.map((post) => (
                 <PostCard
                   key={post.id}
@@ -198,7 +230,6 @@ const ProfilePage = () => {
           </div>
         )}
 
-        {/* Likes */}
         {activeTab === "likes" && (
           <div className="space-y-4">
             {isLikesLoading ? (
@@ -206,7 +237,7 @@ const ProfilePage = () => {
                 <PostSkeleton />
                 <PostSkeleton />
               </>
-            ) : likedPosts!.length > 0 ? (
+            ) : (likedPosts?.length ?? 0) > 0 ? (
               likedPosts?.map((like) => (
                 <PostCard
                   key={like.id}
@@ -222,6 +253,16 @@ const ProfilePage = () => {
           </div>
         )}
       </div>
+
+      <FollowListModal
+        isOpen={activeModal !== null}
+        onClose={() => setActiveModal(null)}
+        title={activeModal || "Followers"}
+        items={activeModal === "Followers" ? followerItems : followingItems}
+        isLoading={
+          activeModal === "Followers" ? isLoadingFollowers : isLoadingFollowings
+        }
+      />
     </div>
   );
 };

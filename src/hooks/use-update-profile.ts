@@ -8,6 +8,7 @@ interface UpdateProfilePayload {
   bio?: string;
   location?: string;
   website?: string;
+  image?: string;
 }
 
 export const useUpdateProfile = () => {
@@ -22,12 +23,16 @@ export const useUpdateProfile = () => {
       return response.data;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["session"] });
+      queryClient.invalidateQueries({ queryKey: ["auth"] });
       queryClient.invalidateQueries({ queryKey: ["profile"] });
+      queryClient.invalidateQueries({ queryKey: ["usr-profile"] });
       queryClient.invalidateQueries({ queryKey: ["user-profile"] });
       queryClient.invalidateQueries({ queryKey: ["user"] });
       queryClient.invalidateQueries({ queryKey: ["posts"] });
       queryClient.invalidateQueries({ queryKey: ["user-posts"] });
       queryClient.invalidateQueries({ queryKey: ["sidebar-profile"] });
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
     },
   });
 };
