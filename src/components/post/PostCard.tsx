@@ -153,7 +153,7 @@ const PostCard = ({ post }: PostCardProps) => {
           <img
             src={`https://1p5nep1spk.ucarecd.net/${post.image}/`}
             alt="Post"
-            className="aspect-square h-80 w-2/3 rounded-xl object-cover"
+            className="max-h-[500px] w-full rounded-xl object-contain bg-black/5"
           />
         )}
 
