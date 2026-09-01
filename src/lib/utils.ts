@@ -18,5 +18,5 @@ export function getImageUrl(image: string | null | undefined) {
   ) {
     return image;
   }
-  return `https://79gcelddzk.ucarecd.net/${image}/`;
+  return `https://1p5nep1spk.ucarecd.net/${image}/`;
 }

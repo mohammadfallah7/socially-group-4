@@ -88,7 +88,7 @@ export const EditProfileModal = ({ user }: EditProfileModalProps) => {
           const cleanUuid = String(imageUuid)
             .replace(/^\/+|\/+$/g, "")
             .trim();
-          finalImageUrl = `https://79gcelddzk.ucarecd.net/${cleanUuid}/`;
+          finalImageUrl = `https://1p5nep1spk.ucarecd.net/${cleanUuid}/`;
         }
       }
 

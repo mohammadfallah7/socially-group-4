@@ -37,49 +37,45 @@ const PostCard = ({ post }: PostCardProps) => {
   const { session } = useSessionStore();
   const { mutate: createComment } = useCreateComment(post.id);
 
-
-
   const { mutate: toggleLike, isPending: isLikeLoading } = useToggleLike();
 
   const { mutate: deletePost, isPending: isDeletePending } = useDeletePost();
 
-  const isLiked = post.likes.some(
-    (like) => like.userId === session?.user.id,
-  );
+  const isLiked = post.likes.some((like) => like.userId === session?.user.id);
 
   const isLikeButtonLoading = isLikeLoading || isOwnPostLoading;
 
-const handleComment = () => {
-  setIsCommentLoading(true);
+  const handleComment = () => {
+    setIsCommentLoading(true);
 
-  if (comment.trim().length < 5) {
-    setCommentError(true);
+    if (comment.trim().length < 5) {
+      setCommentError(true);
 
-    toast.add({
-      type: "error",
-      description: "invalid fields",
+      toast.add({
+        type: "error",
+        description: "invalid fields",
+      });
+
+      setTimeout(() => {
+        setIsCommentLoading(false);
+      }, 500);
+
+      return;
+    }
+
+    setCommentError(false);
+
+    createComment(comment, {
+      onSuccess: () => {
+        setComment("");
+        setIsCommentLoading(false);
+      },
+
+      onError: () => {
+        setIsCommentLoading(false);
+      },
     });
-
-    setTimeout(() => {
-      setIsCommentLoading(false);
-    }, 500);
-
-    return;
-  }
-
-  setCommentError(false);
-
-  createComment(comment, {
-    onSuccess: () => {
-      setComment("");
-      setIsCommentLoading(false);
-    },
-
-    onError: () => {
-      setIsCommentLoading(false);
-    },
-  });
-};
+  };
 
   const handleLike = () => {
     if (session?.user.id === post.authorId) {
@@ -152,7 +148,7 @@ const handleComment = () => {
 
         {post.image && (
           <img
-            src={`https://79gcelddzk.ucarecd.net/${post.image}/`}
+            src={`https://1p5nep1spk.ucarecd.net/${post.image}/`}
             alt="Post"
             className="aspect-square h-80 w-2/3 rounded-xl object-cover"
           />
@@ -255,16 +251,12 @@ const handleComment = () => {
             </div>
 
             <div className="flex justify-end">
-              <Button
-                onClick={handleComment}
-                disabled={isCommentLoading}
-              >
+              <Button onClick={handleComment} disabled={isCommentLoading}>
                 {isCommentLoading ? (
                   <Loader2 className="animate-spin" />
                 ) : (
                   <Send />
                 )}
-
                 Comment
               </Button>
             </div>
