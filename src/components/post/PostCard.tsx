@@ -11,6 +11,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
 import { useToggleLike } from "@/hooks/use-toggle-like";
@@ -29,17 +30,19 @@ const PostCard = ({ post }: PostCardProps) => {
 
   const { session } = useSessionStore();
 
-  const isLiked = post.likes.some((l) => l.userId === session?.user.id);
+  const navigate = useNavigate();
+
+  const isLiked = post.likes.some((like) => like.userId === session?.user.id);
 
   const { mutate: deletePost, isPending: isDeletePending } = useDeletePost();
-
-  const handleDelete = () => {
-    deletePost(post.id);
-  };
 
   const [isOwnPostLoading, setIsOwnPostLoading] = useState(false);
 
   const isLikeButtonLoading = isLikeLoading || isOwnPostLoading;
+
+  const handleDelete = () => {
+    deletePost(post.id);
+  };
 
   const handleLike = () => {
     if (session?.user.id === post.authorId) {
@@ -110,6 +113,7 @@ const PostCard = ({ post }: PostCardProps) => {
           <img
             src={`https://79gcelddzk.ucarecd.net/${post.image}/`}
             className="aspect-square h-80 w-2/3 rounded-xl object-cover"
+            alt="Post"
           />
         )}
 
@@ -153,6 +157,7 @@ const PostCard = ({ post }: PostCardProps) => {
         {/* Comments */}
         {addComment && (
           <div className="flex flex-col gap-5 border-t pt-5">
+            {/* Existing Comments */}
             {post.comments.map((comment) => (
               <div key={comment.id} className="flex flex-col gap-3">
                 <Link
@@ -181,25 +186,44 @@ const PostCard = ({ post }: PostCardProps) => {
             ))}
 
             {/* Add Comment */}
-            <div className="flex items-start gap-3 pt-5">
-              <img
-                src="/user_profile.svg"
-                alt="Avatar"
-                className="size-8 rounded-full object-cover"
-              />
+            {!session ? (
+              <div className="flex items-center justify-between rounded-lg px-3 py-4 bg-primary">
+                <div>
+                  <p className="font-medium text-muted text-lg pb-2">
+                    You are signed out
+                  </p>
 
-              <textarea
-                placeholder="Write a comment..."
-                className="min-h-[65px] flex-1 resize-none rounded-lg border p-3 text-sm outline-none focus:border-gray-400"
-              />
-            </div>
+                  <p className="text-sm text-muted">
+                    Sign in to write a comment
+                  </p>
+                </div>
 
-            <div className="flex justify-end">
-              <Button className="cursor-pointer bg-black text-white hover:bg-black/90">
-                <Send />
-                Comment
-              </Button>
-            </div>
+                <Button
+                  className="p-4 cursor-pointer bg-primary-foreground text-primary- hover:bg-primary-foreground"
+                  onClick={() => navigate("/sign-in")}
+                >
+                  Sign in
+                </Button>
+              </div>
+            ) : (
+              <>
+                <div className="flex items-start gap-3 pt-5">
+                  <UserAvatar image={session.user.image} />
+
+                  <textarea
+                    placeholder="Write a comment..."
+                    className="min-h-[65px] flex-1 resize-none rounded-lg border p-3 text-sm outline-none focus:border-gray-400"
+                  />
+                </div>
+
+                <div className="flex justify-end">
+                  <Button className="cursor-pointer bg-black text-white hover:bg-black/90">
+                    <Send />
+                    Comment
+                  </Button>
+                </div>
+              </>
+            )}
           </div>
         )}
       </CardContent>
