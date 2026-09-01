@@ -1,8 +1,5 @@
-import { cn, getUsernameFromEmail } from "@/lib/utils";
-import { useSessionStore } from "@/stores/session.store";
-import type { Post } from "@/types/post.type";
+import { useState } from "react";
 import { formatDistanceToNow } from "date-fns";
-import { useDeletePost } from "@/hooks/use-delete-post";
 import {
   Heart,
   LucideTrash2,
@@ -10,36 +7,79 @@ import {
   Send,
   Loader2,
 } from "lucide-react";
-import { useState } from "react";
+import { Link } from "react-router";
+
+import { cn, getUsernameFromEmail } from "@/lib/utils";
+import { useSessionStore } from "@/stores/session.store";
+import type { Post } from "@/types/post.type";
+
+import { useDeletePost } from "@/hooks/use-delete-post";
+import { useToggleLike } from "@/hooks/use-toggle-like";
+import { useCreateComment } from "@/hooks/use-create-comment";
+
+import { toast } from "../ui/toast";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
-import { useToggleLike } from "@/hooks/use-toggle-like";
 import UserAvatar from "../UserAvatar";
-import { toast } from "../ui/toast";
-import { Link } from "react-router";
 
 type PostCardProps = {
   post: Post;
+  refetch?: () => void;
 };
 
 const PostCard = ({ post }: PostCardProps) => {
   const [addComment, setAddComment] = useState(false);
+  const [comment, setComment] = useState("");
+  const [commentError, setCommentError] = useState(false);
+  const [isCommentLoading, setIsCommentLoading] = useState(false);
+  const [isOwnPostLoading, setIsOwnPostLoading] = useState(false);
+
+  const { session } = useSessionStore();
+  const { mutate: createComment } = useCreateComment(post.id);
+
+
 
   const { mutate: toggleLike, isPending: isLikeLoading } = useToggleLike();
 
-  const { session } = useSessionStore();
-
-  const isLiked = post.likes.some((l) => l.userId === session?.user.id);
-
   const { mutate: deletePost, isPending: isDeletePending } = useDeletePost();
 
-  const handleDelete = () => {
-    deletePost(post.id);
-  };
-
-  const [isOwnPostLoading, setIsOwnPostLoading] = useState(false);
+  const isLiked = post.likes.some(
+    (like) => like.userId === session?.user.id,
+  );
 
   const isLikeButtonLoading = isLikeLoading || isOwnPostLoading;
+
+const handleComment = () => {
+  setIsCommentLoading(true);
+
+  if (comment.trim().length < 5) {
+    setCommentError(true);
+
+    toast.add({
+      type: "error",
+      description: "invalid fields",
+    });
+
+    setTimeout(() => {
+      setIsCommentLoading(false);
+    }, 500);
+
+    return;
+  }
+
+  setCommentError(false);
+
+  createComment(comment, {
+    onSuccess: () => {
+      setComment("");
+      setIsCommentLoading(false);
+    },
+
+    onError: () => {
+      setIsCommentLoading(false);
+    },
+  });
+};
 
   const handleLike = () => {
     if (session?.user.id === post.authorId) {
@@ -58,6 +98,10 @@ const PostCard = ({ post }: PostCardProps) => {
     }
 
     toggleLike(post.id);
+  };
+
+  const handleDelete = () => {
+    deletePost(post.id);
   };
 
   return (
@@ -109,6 +153,7 @@ const PostCard = ({ post }: PostCardProps) => {
         {post.image && (
           <img
             src={`https://79gcelddzk.ucarecd.net/${post.image}/`}
+            alt="Post"
             className="aspect-square h-80 w-2/3 rounded-xl object-cover"
           />
         )}
@@ -143,7 +188,9 @@ const PostCard = ({ post }: PostCardProps) => {
             onClick={() => setAddComment((prev) => !prev)}
           >
             <MessageCircle
-              className={cn(addComment && "fill-blue-500 text-blue-500")}
+              className={cn(
+                addComment && "fill-blue-500 text-blue-500 hover:text-blue-500",
+              )}
             />
 
             {post._count.comments}
@@ -181,22 +228,43 @@ const PostCard = ({ post }: PostCardProps) => {
             ))}
 
             {/* Add Comment */}
-            <div className="flex items-start gap-3 pt-5">
-              <img
-                src="/user_profile.svg"
-                alt="Avatar"
-                className="size-8 rounded-full object-cover"
-              />
+            <div className="flex flex-col gap-2">
+              <div className="flex items-start gap-3">
+                <img
+                  src="/user_profile.svg"
+                  alt="Avatar"
+                  className="size-8 rounded-full object-cover"
+                />
 
-              <textarea
-                placeholder="Write a comment..."
-                className="min-h-[65px] flex-1 resize-none rounded-lg border p-3 text-sm outline-none focus:border-gray-400"
-              />
+                <textarea
+                  value={comment}
+                  onChange={(e) => {
+                    setComment(e.target.value);
+                    setCommentError(false);
+                  }}
+                  placeholder="Write a comment..."
+                  className="min-h-[65px] flex-1 resize-none rounded-lg border p-3 text-sm outline-none focus:border-gray-400"
+                />
+              </div>
+
+              {commentError && (
+                <p className="px-11 py-2 text-xs text-red-500">
+                  Content is too short, minimum 5 characters
+                </p>
+              )}
             </div>
 
             <div className="flex justify-end">
-              <Button className="cursor-pointer bg-black text-white hover:bg-black/90">
-                <Send />
+              <Button
+                onClick={handleComment}
+                disabled={isCommentLoading}
+              >
+                {isCommentLoading ? (
+                  <Loader2 className="animate-spin" />
+                ) : (
+                  <Send />
+                )}
+
                 Comment
               </Button>
             </div>

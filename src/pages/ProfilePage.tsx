@@ -35,13 +35,21 @@ const ProfilePage = () => {
 
   const { data: followersData, isLoading: isLoadingFollowers } =
     useGetFollowers(profile?.id, activeModal === "Followers");
+
   const { data: followingsData, isLoading: isLoadingFollowings } =
     useGetFollowings(profile?.id, activeModal === "Following");
 
-  const { data: posts, isLoading: isPostsLoading } = useUserPosts(profile?.id);
-  const { data: likedPosts, isLoading: isLikesLoading } = useUserLikes(
-    profile?.id,
-  );
+  const {
+    data: posts,
+    isLoading: isPostsLoading,
+    refetch: refetchUserPosts,
+  } = useUserPosts(profile?.id);
+
+  const {
+    data: likedPosts,
+    isLoading: isLikesLoading,
+    refetch: refetchUserLikes,
+  } = useUserLikes(profile?.id);
 
   const { mutate: toggleFollow, isPending: isFollowPending } =
     useToggleFollow();
@@ -207,7 +215,13 @@ const ProfilePage = () => {
                 <PostSkeleton />
               </>
             ) : (posts?.length ?? 0) > 0 ? (
-              posts?.map((post) => <PostCard key={post.id} post={post} />)
+              posts?.map((post) => (
+                <PostCard
+                  key={post.id}
+                  post={post}
+                  refetch={refetchUserPosts}
+                />
+              ))
             ) : (
               <p className="py-8 text-center text-sm text-muted-foreground">
                 No posts yet.
@@ -225,7 +239,11 @@ const ProfilePage = () => {
               </>
             ) : (likedPosts?.length ?? 0) > 0 ? (
               likedPosts?.map((like) => (
-                <PostCard key={like.id} post={like.post} />
+                <PostCard
+                  key={like.id}
+                  post={like.post}
+                  refetch={refetchUserLikes}
+                />
               ))
             ) : (
               <p className="py-8 text-center text-sm text-muted-foreground">
