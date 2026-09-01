@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { formatDistanceToNow } from "date-fns";
+import { Link, useNavigate } from "react-router";
 import {
   Heart,
   LucideTrash2,
@@ -7,7 +8,6 @@ import {
   Send,
   Loader2,
 } from "lucide-react";
-import { Link } from "react-router";
 
 import { cn, getUsernameFromEmail } from "@/lib/utils";
 import { useSessionStore } from "@/stores/session.store";
@@ -35,6 +35,8 @@ const PostCard = ({ post }: PostCardProps) => {
   const [isOwnPostLoading, setIsOwnPostLoading] = useState(false);
 
   const { session } = useSessionStore();
+  const navigate = useNavigate();
+
   const { mutate: createComment } = useCreateComment(post.id);
 
   const { mutate: toggleLike, isPending: isLikeLoading } = useToggleLike();
@@ -70,7 +72,6 @@ const PostCard = ({ post }: PostCardProps) => {
         setComment("");
         setIsCommentLoading(false);
       },
-
       onError: () => {
         setIsCommentLoading(false);
       },
@@ -128,6 +129,7 @@ const PostCard = ({ post }: PostCardProps) => {
             </div>
           </Link>
 
+          {/* Delete Post */}
           {session?.user.id === post.authorId && (
             <Button
               variant="ghost"
@@ -143,9 +145,10 @@ const PostCard = ({ post }: PostCardProps) => {
           )}
         </div>
 
-        {/* Post */}
+        {/* Post Content */}
         <p>{post.content}</p>
 
+        {/* Post Image */}
         {post.image && (
           <img
             src={`https://1p5nep1spk.ucarecd.net/${post.image}/`}
@@ -156,6 +159,7 @@ const PostCard = ({ post }: PostCardProps) => {
 
         {/* Actions */}
         <div className="flex gap-6 text-muted-foreground">
+          {/* Like */}
           <Button
             variant="ghost"
             className={cn(
@@ -175,6 +179,7 @@ const PostCard = ({ post }: PostCardProps) => {
             {post._count.likes}
           </Button>
 
+          {/* Comment */}
           <Button
             variant="ghost"
             className={cn(
@@ -196,6 +201,7 @@ const PostCard = ({ post }: PostCardProps) => {
         {/* Comments */}
         {addComment && (
           <div className="flex flex-col gap-5 border-t pt-5">
+            {/* Existing Comments */}
             {post.comments.map((comment) => (
               <div key={comment.id} className="flex flex-col gap-3">
                 <Link
@@ -224,42 +230,66 @@ const PostCard = ({ post }: PostCardProps) => {
             ))}
 
             {/* Add Comment */}
-            <div className="flex flex-col gap-2">
-              <div className="flex items-start gap-3">
-                <img
-                  src="/user_profile.svg"
-                  alt="Avatar"
-                  className="size-8 rounded-full object-cover"
-                />
+            {!session ? (
+              <div className="flex items-center justify-between rounded-lg bg-primary px-3 py-3">
+                <div>
+                  <p className="pb-2 text-lg font-medium text-muted">
+                    You are signed out
+                  </p>
 
-                <textarea
-                  value={comment}
-                  onChange={(e) => {
-                    setComment(e.target.value);
-                    setCommentError(false);
-                  }}
-                  placeholder="Write a comment..."
-                  className="min-h-[65px] flex-1 resize-none rounded-lg border p-3 text-sm outline-none focus:border-gray-400"
-                />
+                  <p className="text-sm text-muted">
+                    Sign in to write a comment
+                  </p>
+                </div>
+
+                <Button
+                  className="cursor-pointer bg-primary-foreground p-4 text-primary hover:bg-primary-foreground"
+                  onClick={() => navigate("/sign-in")}
+                >
+                  Sign in
+                </Button>
               </div>
+            ) : (
+              <>
+                {/* Comment Input */}
+                <div className="flex items-start gap-3 pt-5">
+                  <UserAvatar image={session.user.image} />
 
-              {commentError && (
-                <p className="px-11 py-2 text-xs text-red-500">
-                  Content is too short, minimum 5 characters
-                </p>
-              )}
-            </div>
+                  <textarea
+                    value={comment}
+                    onChange={(e) => {
+                      setComment(e.target.value);
+                      setCommentError(false);
+                    }}
+                    placeholder="Write a comment..."
+                    className="min-h-[65px] flex-1 resize-none rounded-lg border p-3 text-sm outline-none focus:border-gray-400"
+                  />
+                </div>
 
-            <div className="flex justify-end">
-              <Button onClick={handleComment} disabled={isCommentLoading}>
-                {isCommentLoading ? (
-                  <Loader2 className="animate-spin" />
-                ) : (
-                  <Send />
+                {/* Comment Error */}
+                {commentError && (
+                  <p className="px-11 py-2 text-xs text-red-500">
+                    Content is too short, minimum 5 characters
+                  </p>
                 )}
-                Comment
-              </Button>
-            </div>
+
+                {/* Comment Button */}
+                <div className="flex justify-end">
+                  <Button
+                    onClick={handleComment}
+                    disabled={isCommentLoading}
+                    className="cursor-pointer bg-black text-white hover:bg-black/90"
+                  >
+                    {isCommentLoading ? (
+                      <Loader2 className="animate-spin" />
+                    ) : (
+                      <Send />
+                    )}
+                    Comment
+                  </Button>
+                </div>
+              </>
+            )}
           </div>
         )}
       </CardContent>
