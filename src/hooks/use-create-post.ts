@@ -9,9 +9,10 @@ export const useCreatePost = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (content: string) => {
+    mutationFn: async (payload: { content: string; image?: string }) => {
       const response = await axiosInstance.post<Response<Post>>("/api/posts", {
-        content: content.trim(),
+        content: payload.content.trim(),
+        image: payload.image,
       });
 
       return response.data;
